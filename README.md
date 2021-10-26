@@ -1,49 +1,46 @@
 ![](image_files/bg_img.jpg)
 
 # Calorie for Diet
-> 간단한 프로젝트 소개 문구를 써보면 어떨까요?
-
 바코드 및 음식물 사진을 통하여 칼로리를 자동으로 계산해줍니다.
 설정한 칼로리의 초과 또는 미만 여부를 표시해주며 한 눈에 영양 정보를 볼 수 있습니다.
+<br><br/>
 
-
-<br/>
+# 시연 영상
+[👉클릭](https://www.youtube.com/watch?v=CDB5UjjE3v4)
+<br><br/>
 
 # 팀 소개
-> 여러분의 팀을 소개해주세요!
+: 서예선 - Frontend
 
-:seedling: Aiden - 서버 개발을 맡고 있어요 :) (예시)
+: 이지수 - Backend
 
-: 서예선 - 
+: 이채은 - Frontend
 
-: 이지수 - 
+: 최정은 - Backend
+<br><br/>
 
-: 이채은 - 
+<!-- # 개발 방법
+<br/> -->
 
-: 최정은 - 
+# 사용 방법
+0. `git clone https://github.com/jungeun919/Calorie-for-Diet.git` <!-- → 해당 저장소로부터 프로젝트 복제 -->
 
-<br/>
+1. yolov3.weights 파일을 다운 받아 폴더에 넣기
 
-# 개발 방법
-> 어떻게 개발하고 있는지, 문제는 어떻게 해결하려고 하는지 등을 적으면 좋아요.
+2. `. venv/scripts/activate` → 가상환경 실행
 
-- BlueTooth를 사용하기 위해 :grapes: 라즈베리파이를 사용했어요. (예시)
+3. `flask db migrate` → 마이그레이션 실행
 
-```python
-print("이렇게 코드도 작성할 수 있어요.") (예시)
-```
+4. `flask db upgrade` → 테이블 생성
 
-<br/>
+5. `export FLASK_APP=__init__` → 환경변수 설정
 
-# 사용 방법 & 결과
-> 스크린샷이나 코드 예제를 통해 알아보기 쉽게 작성해요!
+6. `pip install -r requirements.txt` → requirements.txt 파일 안에 있는 패키지 모두 설치
 
-1. `install()` 함수를 사용해서 설치하고 ... (예시)
+7. `flask run` → 서버 실행
+<br><br/>
 
-
-<br/>
-
-# 업데이트
+<!-- # 업데이트
 > 각 버전별로 어떤것이 수정되었는지 적으면 좋아요! 아래는 예시입니다 :)
 
 * 0.2.1
@@ -55,5 +52,5 @@ print("이렇게 코드도 작성할 수 있어요.") (예시)
 * 0.1.0
     * 대망의 첫 출시!
 * 0.0.1
-    * Repo init!
+    * Repo init! -->
 

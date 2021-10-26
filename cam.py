@@ -12,7 +12,7 @@ cam = Blueprint('cam', __name__)
 # for local webcam use cv2.VideoCapture(0)
 
 def gen_frames():  # generate frame by frame from camera
-    camera = cv2.VideoCapture(0) 
+    camera = cv2.VideoCapture(1) 
     global frame
     # my_code = 0
     while True:
