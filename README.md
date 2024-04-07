@@ -19,8 +19,6 @@
 : 최정은 - Backend
 <br><br/>
 
-<!-- # 개발 방법
-<br/> -->
 
 # 사용 방법
 0. `git clone https://github.com/jungeun919/Calorie-for-Diet.git` <!-- → 해당 저장소로부터 프로젝트 복제 -->
@@ -38,19 +36,4 @@
 6. `pip install -r requirements.txt` → requirements.txt 파일 안에 있는 패키지 모두 설치
 
 7. `flask run` → 서버 실행
-<br><br/>
-
-<!-- # 업데이트
-> 각 버전별로 어떤것이 수정되었는지 적으면 좋아요! 아래는 예시입니다 :)
-
-* 0.2.1
-    * 수정: 문서 업데이트!
-* 0.2.0
-    * 추가: `init()` 메서드 추가
-* 0.1.1
-    * 수정: `macOS` 에서 실행 안되는 현상 수정
-* 0.1.0
-    * 대망의 첫 출시!
-* 0.0.1
-    * Repo init! -->
-
+<br>
