@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8020aeda9b89
+Revision ID: 45415cea5540
 Revises: 
-Create Date: 2021-10-11 04:49:04.330936
+Create Date: 2024-04-05 01:33:41.244480
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8020aeda9b89'
+revision = '45415cea5540'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,6 +34,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('date', sa.DateTime(), nullable=True),
+    sa.Column('image', sa.String(length=100), nullable=True),
     sa.Column('t_calories', sa.Float(), nullable=True),
     sa.Column('t_sodium', sa.Float(), nullable=True),
     sa.Column('t_carbohydrate', sa.Float(), nullable=True),
@@ -47,6 +48,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('record_id', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(length=1000), nullable=True),
+    sa.Column('weight', sa.Integer(), nullable=True),
     sa.Column('calories', sa.Float(), nullable=True),
     sa.Column('sodium', sa.Float(), nullable=True),
     sa.Column('carbohydrate', sa.Float(), nullable=True),

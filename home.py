@@ -38,9 +38,10 @@ probability_minimum = 0.5
 threshold = 0.3
 network = cv2.dnn.readNetFromDarknet(configuration_path, weights_path)
 
-# Getting names of all layers
 layers_names_all = network.getLayerNames()
-layers_names_output = [layers_names_all[i[0] - 1] for i in network.getUnconnectedOutLayers()]  # list of layers' names
+# NumPy 배열을 반환하는 경우 (예: OpenCV 4.x 이상), flatten() 사용
+layers_indexes_output = network.getUnconnectedOutLayers().flatten()
+layers_names_output = [layers_names_all[i - 1] for i in layers_indexes_output]
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
