@@ -6,6 +6,11 @@ from . import db
 
 auth = Blueprint('auth', __name__)
 
+@auth.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home.intro'))
+
 @auth.route('/login')
 def login():
     return render_template('auth/login.html')
@@ -14,10 +19,9 @@ def login():
 def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
-    # remember = True if request.form.get('remember') else False
 
     user = User.query.filter_by(email=email).first()
-
+    
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.')
         return redirect(url_for('auth.login'))
@@ -28,11 +32,6 @@ def login_post():
 @auth.route('/signup')
 def signup():
     return render_template('auth/signup.html')
-
-@auth.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('home.intro'))
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
@@ -52,7 +51,7 @@ def signup_post():
     else:
         gender = 1
 
-    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'), gender=gender)
+    new_user = User(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'), gender=gender)
 
     db.session.add(new_user)
     db.session.commit()

@@ -1,13 +1,13 @@
 from flask_login import UserMixin
-from . import db
-from sqlalchemy import Integer, ForeignKey, String, Column
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from . import db
 
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String(256))
     name = db.Column(db.String(1000))
     weight = db.Column(db.Integer, nullable=True)
     height = db.Column(db.Integer, nullable=True)
@@ -43,4 +43,3 @@ class Food(db.Model):
     fat = db.Column(db.Float)
     cholesterol = db.Column(db.Float)
     protein = db.Column(db.Float) 
-    
