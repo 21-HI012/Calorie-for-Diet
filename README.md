@@ -21,19 +21,12 @@
 
 
 # 사용 방법
-0. `git clone https://github.com/jungeun919/Calorie-for-Diet.git` <!-- → 해당 저장소로부터 프로젝트 복제 -->
+yolov3.weights 파일이 프로젝트 루트에 존재하고 Docker Desktop이 설치되었다는 가정하에 진행됩나다.
 
-1. yolov3.weights 파일을 다운 받아 폴더에 넣기
+Docker 컨테이너를 빌드하고 백그라운드에서 실행합니다.
+```bash
+docker compose up --build -d
+```
 
-2. `. venv/scripts/activate` → 가상환경 실행
-
-3. `flask db migrate` → 마이그레이션 실행
-
-4. `flask db upgrade` → 테이블 생성
-
-5. `export FLASK_APP=__init__` → 환경변수 설정
-
-6. `pip install -r requirements.txt` → requirements.txt 파일 안에 있는 패키지 모두 설치
-
-7. `flask run` → 서버 실행
+빌드와 실행이 완료되면, `localhost:5000`에 접속하여 애플리케이션을 사용할 수 있습니다.
 <br>
