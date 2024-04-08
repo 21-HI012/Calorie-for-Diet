@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: flask-app
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+      - "5000:5000"
+    networks:
+      - intra
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    container_name: mysql
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - intra
+    restart: always
+
+volumes:
+  db_data:
+
+networks:
+  intra:
+    driver: bridge

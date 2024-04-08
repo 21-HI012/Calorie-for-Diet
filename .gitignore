@@ -1,6 +1,6 @@
 yolov3.weights
 migrations/
-venv/
+venv/*
 config.py
 
 # Created by https://www.toptal.com/developers/gitignore/api/flask

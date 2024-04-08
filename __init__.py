@@ -10,7 +10,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
-    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:Hanium22syu!@localhost:3306/hanium"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:syu22Hanium!@db:3306/hanium"
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
