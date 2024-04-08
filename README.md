@@ -23,6 +23,8 @@
 # 사용 방법
 yolov3.weights 파일이 프로젝트 루트에 존재하고 Docker Desktop이 설치되었다는 가정하에 진행됩나다.
 
+`.env_template` 내용을 복사해서 `.env` 파일의 루트에 생성합니다.
+
 Docker 컨테이너를 빌드하고 백그라운드에서 실행합니다.
 ```bash
 docker compose up --build -d
