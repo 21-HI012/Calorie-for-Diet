@@ -1,12 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
-from . import auth
 from .forms import LoginForm, RegisterForm
 from models import User, db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-auth = Blueprint('auth', __name__)
+user = Blueprint('user', __name__)
 
-@auth.route('/register', methods=['GET', 'POST'])
+@user.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -19,7 +18,7 @@ def register():
     return render_template('register.html', form=form)
 
 
-@auth.route('/login', methods=['GET', 'POST'])
+@user.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -33,16 +32,16 @@ def login():
     return render_template('login.html', form=form)
 
 
-# @auth.route('/logout')
+# @user.route('/logout')
 # def logout():
 #     logout_user()
 #     return redirect(url_for('home.intro'))
 
-# @auth.route('/login')
+# @user.route('/login')
 # def login():
-#     return render_template('auth/login.html')
+#     return render_template('user/login.html')
 
-# @auth.route('/login', methods=['POST'])
+# @user.route('/login', methods=['POST'])
 # def login_post():
 #     email = request.form.get('email')
 #     password = request.form.get('password')
@@ -52,18 +51,18 @@ def login():
 
 #     if not user or not check_password_hash(user.password, password):
 #         flash('Please check your login details and try again.')
-#         return redirect(url_for('auth.login'))
+#         return redirect(url_for('user.login'))
 
 #     login_user(user)
 #     return redirect(url_for('home.main'))
 
-# @auth.route('/signup')
+# @user.route('/signup')
 # def signup():
-#     return render_template('auth/signup.html')
+#     return render_template('user/signup.html')
 
 
 
-# @auth.route('/signup', methods=['POST'])
+# @user.route('/signup', methods=['POST'])
 # def signup_post():
 #     email = request.form.get('email')
 #     name = request.form.get('name')
@@ -74,7 +73,7 @@ def login():
 
 #     if user:
 #         flash('Email address already exists')
-#         return redirect(url_for('auth.signup'))
+#         return redirect(url_for('user.signup'))
 
 #     if gender == "남자":
 #         gender = 0
@@ -86,4 +85,4 @@ def login():
 #     db.session.add(new_user)
 #     db.session.commit()
 
-#     return redirect(url_for('auth.login'))
+#     return redirect(url_for('user.login'))

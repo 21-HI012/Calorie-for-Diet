@@ -32,19 +32,19 @@ def create_app():
 
 
     # blueprint for auth routes in our app
-    from .auth import auth as auth_blueprint
+    from auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
-    from .home import home as home_blueprint
+    from home import home as home_blueprint
     app.register_blueprint(home_blueprint)
 
-    from .user import user as user_blueprint
+    from user import user as user_blueprint
     app.register_blueprint(user_blueprint)
 
-    from .cam import cam as cam_blueprint
+    from cam import cam as cam_blueprint
     app.register_blueprint(cam_blueprint)
 
-    from .upload_s3 import upload as upload_blueprint
+    from upload_s3 import upload as upload_blueprint
     app.register_blueprint(upload_blueprint)
 
     return app

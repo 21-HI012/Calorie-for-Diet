@@ -12,9 +12,9 @@ import time
 from datetime import datetime, date
 from datetime import timedelta
 from flask_login import current_user
-from .user import *
+from user import *
 
-from .models import *
+from app.models import *
 # from . import db
 from sqlalchemy import cast, DATE
 from sqlalchemy.sql import func

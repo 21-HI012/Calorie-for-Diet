@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
-from . import db
+from app import db
 from flask_login import login_required, current_user
-from .models import *
+from app.models import *
 from datetime import datetime
 from datetime import timedelta
 
