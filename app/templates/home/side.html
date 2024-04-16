@@ -1,59 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script
-    src="https://code.jquery.com/jquery-3.5.1.js"
-    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
-    crossorigin="anonymous"></script>
-    <script src="https://kit.fontawesome.com/56bb8e82a1.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="../../static/home/side.css"/>
+      src="https://code.jquery.com/jquery-3.5.1.js"
+      integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/56bb8e82a1.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" type="text/css" href="../../static/home/side.css" />
     <title>사이드바</title>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header">calorie for diet</div>
     <div class="dropdown">
-        <button class="side_button">+</button>
-        <div id="drop_content" class="drop_content">
-            <p style="font-size: 30px; font-weight: bold; text-align: center; margin-top: 0; margin-bottom: 20px; color: #6bc57d">MENU</p>
-            <div class="menu_content"><a href="{{ url_for('home.main') }}" 
-                    style="text-decoration: none; color: white;">
-                    <i class="fas fa-house-user fa-2x"></i> 메인페이지</a></div>
-            <div class="menu_content"><a href="{{ url_for('user.record') }}" 
-                style="text-decoration: none; color: white;">
-                <i class="fas fa-user fa-2x"></i> 마이 기록</a></div>
-            <div class="menu_content"><a href="{{ url_for('cam.camera') }}" 
-                style="text-decoration: none; color: white;">
-                <i class="fas fa-camera fa-2x"></i> 카메라</a></div>
-            <div class="menu_content"><a href="{{ url_for('home.upload') }}" 
-                style="text-decoration: none; color: white;">
-                <i class="fas fa-image fa-2x"></i> 이미지 업로드</a></div>
-            <div class="menu_content"><a href="{{ url_for('home.barcode') }}" 
-                style="text-decoration: none; color: white;">
-                <i class="fas fa-qrcode fa-2x"></i> 바코드</a></div>
+      <button class="side_button">+</button>
+      <div id="drop_content" class="drop_content">
+        <p
+          style="
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #6bc57d;
+          "
+        >
+          MENU
+        </p>
+        <div class="menu_content">
+          <a
+            href="{{ url_for('home.main') }}"
+            style="text-decoration: none; color: white"
+          >
+            <i class="fas fa-house-user fa-2x"></i> 메인페이지</a
+          >
         </div>
+        <div class="menu_content">
+          <a
+            href="{{ url_for('user.record') }}"
+            style="text-decoration: none; color: white"
+          >
+            <i class="fas fa-user fa-2x"></i> 마이 기록</a
+          >
+        </div>
+        <div class="menu_content">
+          <a
+            href="{{ url_for('cam.camera') }}"
+            style="text-decoration: none; color: white"
+          >
+            <i class="fas fa-camera fa-2x"></i> 카메라</a
+          >
+        </div>
+        <div class="menu_content">
+          <a
+            href="{{ url_for('food.upload') }}"
+            style="text-decoration: none; color: white"
+          >
+            <i class="fas fa-image fa-2x"></i> 이미지 업로드</a
+          >
+        </div>
+        <div class="menu_content">
+          <a
+            href="{{ url_for('home.barcode') }}"
+            style="text-decoration: none; color: white"
+          >
+            <i class="fas fa-qrcode fa-2x"></i> 바코드</a
+          >
+        </div>
+      </div>
     </div>
- 
+
     <script>
-        $(document).ready(function(){
-            var target = $(".drop_content");
- 
-            // 버튼을 클릭하면 사이드바 열림
-            $(document).on("click", ".side_button", function (e){
-                target.show();
-                target.addClass('emphasized');
-            });
- 
-            // 사이드바 외부를 클릭하면 사이드바 닫힘
-            $(document).mouseup(function (e){
-                if(target.has(e.target).length==0) {
-                    target.hide();
-                    target.removeClass('emphasized');
-                } 
-            });
+      $(document).ready(function () {
+        var target = $(".drop_content");
+
+        // 버튼을 클릭하면 사이드바 열림
+        $(document).on("click", ".side_button", function (e) {
+          target.show();
+          target.addClass("emphasized");
         });
+
+        // 사이드바 외부를 클릭하면 사이드바 닫힘
+        $(document).mouseup(function (e) {
+          if (target.has(e.target).length == 0) {
+            target.hide();
+            target.removeClass("emphasized");
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>

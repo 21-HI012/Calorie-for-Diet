@@ -44,7 +44,7 @@ def create_app():
     from cam import cam as cam_blueprint
     app.register_blueprint(cam_blueprint)
 
-    from upload_s3 import upload as upload_blueprint
-    app.register_blueprint(upload_blueprint)
+    from .food import food as food_blueprint
+    app.register_blueprint(food_blueprint)
 
     return app
