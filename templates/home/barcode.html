@@ -6,83 +6,85 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../static/home/barcode.css"/>
-    <title>yolo image recognition</title>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
 
-    <script>
-        $(document).ready(function(){
-            showFood();
+    <link rel="stylesheet" type="text/css" href="../../static/home/barcode.css"/>
+    <title>바코드 인식</title>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            var socket = io.connect('http://127.0.0.1:5000');
+            socket.on('barcode', function(data) {
+                showFood(data.code);
+            });
         });
 
-        function showFood() {
+        function showFood(my_code) {
             $.ajax({
                 type: "GET",
                 url: "./static/food.json",
-                data: {},
                 success: function (response) {
-                    let food = response['food']
-                    let my_code = "{{my_code}}"
-                    console.log(my_code)
-                    food.filter(function (obj) {
-                        if (obj['barcode'] === my_code) {
-                            console.log('있음');
-                            let name = food[obj['id']]['name']
-                            let weight = food[obj['id']]['weight']
-                            let calories = food[obj['id']]['calories']
-                            let sodium = food[obj['id']]['sodium']
-                            let carbohydrate = food[obj['id']]['carbohydrate']
-                            let fat = food[obj['id']]['fat']
-                            let cholesterol= food[obj['id']]['cholesterol']
-                            let protein = food[obj['id']]['protein']
+                    const food = response['food'];
+                    const item = food.find(obj => obj['barcode'] === my_code);
 
-                            let record_html = `<tr>
-                                                    <td style="font-size: 25px; font-weight:bold;">식품명/내용량</td>
-                                                    <td style="font-size: 25px; font-weight:bold;">${name}/${weight}g</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>열량(kcal)</td>
-                                                    <td>${calories}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>나트륨(mg)</td>
-                                                    <td>${sodium}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>탄수화물(mg)</td>
-                                                    <td>${carbohydrate}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>지방(g)</td>
-                                                    <td>${fat}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>콜레스테롤(mg)</td>  
-                                                    <td>${cholesterol}</td>
-                                                </tr>
-                                                <tr>  
-                                                    <td>단백질(g)</td>
-                                                    <td>${protein}</td>                
-                                                </tr>`
-                            $('#info_record').append(record_html)
-                        }
-                    })
+                    if (item) {
+                        let record_html = `
+                            <h2>바코드 인식 결과: 영양정보를 표시합니다.</h2>
+                            <table class="table">
+                                <tr>
+                                    <td style="font-size: 25px; font-weight:bold;">식품명/내용량</td>
+                                    <td style="font-size: 25px; font-weight:bold;">${item.name}/${item.weight}g</td>
+                                </tr>
+                                <tr>
+                                    <td>열량(kcal)</td>
+                                    <td>${item.calories}</td>
+                                </tr>
+                                <tr>
+                                    <td>나트륨(mg)</td>
+                                    <td>${item.sodium}</td>
+                                </tr>
+                                <tr>
+                                    <td>탄수화물(g)</td>
+                                    <td>${item.carbohydrate}</td>
+                                </tr>
+                                <tr>
+                                    <td>지방(g)</td>
+                                    <td>${item.fat}</td>
+                                </tr>
+                                <tr>
+                                    <td>콜레스테롤(mg)</td>
+                                    <td>${item.cholesterol}</td>
+                                </tr>
+                                <tr>
+                                    <td>단백질(g)</td>
+                                    <td>${item.protein}</td>
+                                </tr>
+                            </table>
+                        `;
+                        $('#result').html(record_html);
+                        updateSaveButton(my_code);
+                    } else {
+                        $('#result').html('<h2>해당 식품을 찾을 수 없습니다.</h2>');
+                    }
+                },
+                error: function (error) {
+                    $('#result').html('<h2>데이터를 불러오는 중 오류가 발생했습니다.</h2>');
                 }
             })
+        }
+
+        function updateSaveButton(my_code) {
+            var url = `/barcode_record/${my_code}`;
+            let save_button_html = `<div class="save_btn"><a href="${url}" style="text-decoration: none; color: white">저장하기</a></div>`;
+            $('#result').append(save_button_html);
         }
     </script>
 </head>
 
 <body>
-    {% include 'home/side.html' %}
-    <div class="barcode_name">바코드 인식 결과</div>
-    <div class="barcode_intro">바코드를 인식하고 영양정보를 보여줍니다.</div>
-    <div>
-        <table class="table">
-            <tbody id="info_record">
-            </tbody>
-        </table>
-    </div>
-    <div class="save_btn"><a href="{{url_for('home.barcode_record', my_code=my_code)}}" style="text-decoration: none; color: white">저장하기</a></div>
+    <!-- {% include 'home/side.html' %} -->
+    <img src="{{ url_for('home.video_feed') }}" />
+    <div id="result"></div>
 </body>
 
 </html>

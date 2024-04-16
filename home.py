@@ -13,6 +13,7 @@ from datetime import datetime, date
 from datetime import timedelta
 from flask_login import current_user
 from .user import *
+from . import socketio
 
 from .models import *
 # from . import db
@@ -106,37 +107,45 @@ def food_record():
     # return render_template('user/record.html', date = date)
     return Response(record())
 
-@home.route('/barcode', methods=['GET'])
-def barcode():
+
+def scan_barcode():
     cap = cv2.VideoCapture(0)
     cap.set(3, 320)
     cap.set(4, 240)
 
     while True:
         success, frame = cap.read()
+        if not success:
+            break
 
-        global my_code
         for code in pyzbar.decode(frame):
             my_code = code.data.decode('utf-8')
             if my_code:
-                print("인식 성공 : ", my_code)
-                cv2.destroyAllWindows()
                 cap.release()
-                return render_template('home/barcode.html', my_code=my_code)
-        cv2.imshow('Testing-code-scan', frame)
-        # cv2.waitKey(1)
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q') or key == 27: # 'q' 이거나 'esc' 이면 종료
-            cv2.destroyAllWindows()
-            break
-    return render_template('home/main.html')
+                cv2.destroyAllWindows()
+                socketio.emit('barcode', {'code': my_code})
         
+        ret, buffer = cv2.imencode('.jpg', frame)
+        byte_image = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + byte_image + b'\r\n')
+
+
+@home.route('/video_feed')
+def video_feed():
+    return Response(scan_barcode(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@home.route('/barcode')
+def barcode():
+    return render_template('home/barcode.html')
+
 
 @home.route('/barcode_record/<my_code>')
 def barcode_record(my_code):
     with open('./static/food.json') as f:
         food_data = json.load(f)
-        # print(json.dumps(nutrition_data))
 
     new_record = Record(user_id=current_user.id, date=datetime.now())
     db.session.add(new_record)
@@ -166,59 +175,8 @@ def barcode_record(my_code):
             t_record.t_protein += i['protein']
             db.session.commit()
 
-                # t_date = datetime.today().date()
-                # food = Record.query.get(Record.user_id==current_user.id, Record.date>=t_date)
-                # food.t_calories += i['calories']
-                # db.session.commit()
-
-
-
-    # food_list = Food.query.filter_by(record_id=new_record.id).all()
-    
-    # {'calories': 74.0, 'sodium': 102.0, 'carbohydrate': 17.0, 'fat': 0.4, 'cholesterol': 0.0, 'protein': 3.6999999999999997}
-
-    # return render_template('user/record.html', date = date)
     return Response(record())
 
-    # used_codes = []
-
-    # camera = True
-    # while camera == True:
-        # success, frame = cap.read()
-
-        # for code in decode(frame):
-
-        #     if code.data.decode('utf-8') not in used_codes:
-        #         print('Approved')
-        #         barcode_num = code.data.decode('utf-8')
-        #         print(barcode_num)
-        #         used_codes.append(barcode_num)
-        #         time.sleep(5)
-
-        #         product = db.food.find_one({'barcode': barcode_num})
-        #         print(product, '!!!!!!!!!!')
-        #         db.person.insert_one(product)
-
-        #         name = product['name']
-        #         calories = product['calories']
-        #         sodium = product['sodium']
-        #         carbohydrate = product['carbohydrate']
-        #         fat = product['fat']
-        #         cholesterol = product['cholesterol']
-        #         protein = product['protein']
-
-        #         return render_template('home/barcode.html', name=name, calories=calories, sodium=sodium,
-        #                                 carbohydrate=carbohydrate, fat=fat, cholesterol=cholesterol, protein=protein)
-
-        #     elif code.data.decode('utf-8') in used_codes:
-        #         print('Sorry, this code has been already used')
-        #         time.sleep(5)
-        #     else:
-        #         return html('일치하는 바코드 번호가 없습니다. <a href="/home">메인페이지로 돌아가기</a>')
-
-        # cv2.imshow('Testing-code-scan', frame)
-        # cv2.waitKey(1)
-        # cv2.destroyAllWindows()
 
 @home.route('/')
 def intro():
@@ -245,6 +203,7 @@ def main():
     return render_template('home/main.html', t_nutrition=t_nutrition, t_date=t_date, 
                             per_nutrition=per_nutrition, sodium=t_nutrition['sodium'], carbohydrate=t_nutrition['carbohydrate'],
                             fat=t_nutrition['fat'], cholesterol=t_nutrition['cholesterol'], protein=t_nutrition['protein'])
+
 
 # @home.route('/camera')
 # def camera():

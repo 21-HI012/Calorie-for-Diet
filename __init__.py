@@ -5,9 +5,11 @@ from flask_migrate import Migrate
 from .config import DevelopmentConfig
 from dotenv import load_dotenv
 import os
+from flask_socketio import SocketIO
 
 load_dotenv()
 db = SQLAlchemy()
+socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
@@ -21,7 +23,8 @@ def create_app():
 
     db.init_app(app)
     migrate = Migrate(app, db)
-# 
+
+    socketio.init_app(app)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
