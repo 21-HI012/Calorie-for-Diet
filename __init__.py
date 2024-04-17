@@ -19,14 +19,12 @@ from .utils import upload as upload_blueprint
 from .auth.models import User
 
 load_dotenv()
-# db = SQLAlchemy()
-# socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{os.getenv('MYSQL_ROOT_PASSWORD')}@localhost:3306/{os.getenv('MYSQL_DATABASE')}"
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{os.getenv('MYSQL_ROOT_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
     app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
