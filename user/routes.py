@@ -1,33 +1,27 @@
-from flask import Blueprint, render_template, request
-from . import db
+from flask import render_template, request
 from flask_login import login_required, current_user
-from .models import *
 from datetime import datetime
 from datetime import timedelta
-
-user = Blueprint('user', __name__)
+from ..record.models import Record
+from ..detection.models import Food
+from ..auth.models import User
+from ..extension import db
+from . import user
 
 @user.route('/profile')
 @login_required
 def profile():
     return render_template('user/profile.html')
 
-# @user.route('/record')
-# def record():
-#     return render_template('user/record.html')
 
 # 날짜별 기록
 @user.route('/record')
 def record():
-    # user = User.query.get(current_user.id)
-    # print(user)
-
     dates = []
     for d in range(0, 7):
         t_date = datetime.today().date()
         p_date = t_date - timedelta(days=d)
         dates.append(p_date)
-    # print(today)
 
     # record_list = Record.query.filter_by(user_id=current_user.id) # 동일한 유저
     record_list = Record.query.filter(Record.user_id==current_user.id, Record.date>=t_date) # 동일한 유저
@@ -59,6 +53,7 @@ def record():
     # print("\n\nfood_list:", food_list)
     return render_template('user/record.html', record_list=record_list, dates=dates, date=t_date, record_list_food=record_list_food)
 
+
 @user.route('/day_record/<date>')
 def day_record(date):
     date_obj = datetime.strptime(date, '%Y-%m-%d').date() + timedelta(days=1)
@@ -84,6 +79,7 @@ def day_record(date):
     record_list_food = dict(zip(record_id, record_lists))
     return render_template('user/record.html', record_list=record_list, dates=dates, date=date, record_list_food=record_list_food)
 
+
 @user.route('/record/<int:record_id>')
 def food_record(record_id):
     food_list = Food.query.filter_by(record_id=record_id)
@@ -107,9 +103,11 @@ def food_record(record_id):
     print(food_total)
     return render_template('user/food_record.html', food_list=food_list, food_total=food_total, record_image=record_image)
 
+
 @user.route('/bmi')
 def bmi():
     return render_template('user/bmi.html')
+
 
 @user.route('/bmi/result', methods=['GET', 'POST'])
 def bmi_result():
@@ -126,6 +124,6 @@ def bmi_result():
 
     return render_template("user/bmi_result.html", weight=weight, height=height, bmi=bmi)
 
+
 def calc_bmi(weight, height):
     return round((weight / ((height / 100) ** 2)), 2)
-

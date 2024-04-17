@@ -1,72 +1,46 @@
-from flask import Flask, render_template, request, jsonify, Blueprint, Response
+from flask import render_template, request, Response
 import os
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import time
-from numpy import rec
-from pyzbar.pyzbar import decode
-import pyzbar.pyzbar as pyzbar
 import json
 import time
-from datetime import datetime, date
-from datetime import timedelta
+from datetime import datetime
 from flask_login import current_user
-from .user import *
-from . import socketio
-
-from .models import *
-# from . import db
-from sqlalchemy import cast, DATE
-from sqlalchemy.sql import func
-
-# from pymongo import MongoClient
-
-# client = MongoClient('localhost', 27017)
-# db = client.hanium
-
-home = Blueprint('home', __name__)
+from .models import Food
+from ..record.models import Record
+from ..user.routes import record as day_record
+from ..extension import db
+from . import food
 
 configuration_path = "./cfg/yolov3.cfg"
 weights_path = "./yolov3.weights"
 
 labels = open("./data/coco.names").read().strip().split('\n')
 
-# Setting minimum probability to eliminate weak predictions
 probability_minimum = 0.5
-
-# Setting threshold for non maximum suppression
 threshold = 0.3
 network = cv2.dnn.readNetFromDarknet(configuration_path, weights_path)
 
 layers_names_all = network.getLayerNames()
-# NumPy 배열을 반환하는 경우 (예: OpenCV 4.x 이상), flatten() 사용
 layers_indexes_output = network.getUnconnectedOutLayers().flatten()
 layers_names_output = [layers_names_all[i - 1] for i in layers_indexes_output]
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
-
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def html(content):
-   return '<html><head></head><body>' + content + '</body></html>'
-
-
-# 상세 기록 정보
-@home.route('/food_record')
+@food.route('/food_record')
 def food_record():
     with open('./static/nutrition.json') as f:
         nutrition_data = json.load(f)
-        # print(json.dumps(nutrition_data))
 
     new_record = Record(user_id=current_user.id, date=datetime.now(), image=filename)
     db.session.add(new_record)
     db.session.commit()
-    print(food_weight)
     for index, food in enumerate(products):
         for i in nutrition_data['nutrition']:
             if i['name'] == food:
@@ -82,9 +56,8 @@ def food_record():
 
                 db.session.add(new_food)
                 db.session.commit()
-                
+
                 t_record = Record.query.order_by(Record.id.desc()).first()
-                print(t_record.t_calories)
                 t_record.t_calories += i['calories']
                 t_record.t_sodium += i['sodium']
                 t_record.t_carbohydrate += i['carbohydrate']
@@ -92,128 +65,16 @@ def food_record():
                 t_record.t_cholesterol += i['cholesterol']
                 t_record.t_protein += i['protein']
                 db.session.commit()
-
-                # t_date = datetime.today().date()
-                # food = Record.query.get(Record.user_id==current_user.id, Record.date>=t_date)
-                # food.t_calories += i['calories']
-                # db.session.commit()
-
-
-
-    # food_list = Food.query.filter_by(record_id=new_record.id).all()
-    
-    # {'calories': 74.0, 'sodium': 102.0, 'carbohydrate': 17.0, 'fat': 0.4, 'cholesterol': 0.0, 'protein': 3.6999999999999997}
-
-    # return render_template('user/record.html', date = date)
-    return Response(record())
-
-
-def scan_barcode():
-    cap = cv2.VideoCapture(0)
-    cap.set(3, 320)
-    cap.set(4, 240)
-
-    while True:
-        success, frame = cap.read()
-        if not success:
-            break
-
-        for code in pyzbar.decode(frame):
-            my_code = code.data.decode('utf-8')
-            if my_code:
-                cap.release()
-                cv2.destroyAllWindows()
-                socketio.emit('barcode', {'code': my_code})
         
-        ret, buffer = cv2.imencode('.jpg', frame)
-        byte_image = buffer.tobytes()
-
-        yield (b'--frame\r\n'
-            b'Content-Type: image/jpeg\r\n\r\n' + byte_image + b'\r\n')
+    return Response(day_record())
 
 
-@home.route('/video_feed')
-def video_feed():
-    return Response(scan_barcode(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@home.route('/barcode')
-def barcode():
-    return render_template('home/barcode.html')
-
-
-@home.route('/barcode_record/<my_code>')
-def barcode_record(my_code):
-    with open('./static/food.json') as f:
-        food_data = json.load(f)
-
-    new_record = Record(user_id=current_user.id, date=datetime.now())
-    db.session.add(new_record)
-    db.session.commit()
-    for i in food_data['food']:
-        if i['barcode'] == my_code:
-            new_food = Food(record_id=new_record.id,
-                            name=i['name'],
-                            weight=i['weight'],
-                            calories=i['calories'], 
-                            sodium=i['sodium'], 
-                            carbohydrate=i['carbohydrate'], 
-                            fat=i['fat'], 
-                            cholesterol=i['cholesterol'],
-                            protein=i['protein'])
-
-            db.session.add(new_food)
-            db.session.commit()
-            
-            t_record = Record.query.order_by(Record.id.desc()).first()
-            print(t_record.t_calories)
-            t_record.t_calories += i['calories']
-            t_record.t_sodium += i['sodium']
-            t_record.t_carbohydrate += i['carbohydrate']
-            t_record.t_fat += i['fat']
-            t_record.t_cholesterol += i['cholesterol']
-            t_record.t_protein += i['protein']
-            db.session.commit()
-
-    return Response(record())
-
-
-@home.route('/')
-def intro():
-    return render_template('home/intro.html')
-
-@home.route('/main')
-def main():
-    t_date = datetime.today().date()
-    record_list = Record.query.filter(Record.user_id==current_user.id, Record.date>=t_date).all()
-    t_nutrition = {}
-    t_nutrition['calories'] = t_nutrition['sodium'] = t_nutrition['carbohydrate'] \
-    = t_nutrition['fat'] = t_nutrition['cholesterol'] = t_nutrition['protein'] = 0
-    for record in record_list:
-        t_nutrition['calories'] += record.t_calories
-        t_nutrition['sodium'] += record.t_sodium
-        t_nutrition['carbohydrate'] += record.t_carbohydrate
-        t_nutrition['fat'] += record.t_fat
-        t_nutrition['cholesterol'] += record.t_cholesterol
-        t_nutrition['protein'] += record.t_protein
-
-    per_nutrition = {}
-    per_nutrition['calories'] = round(t_nutrition['calories']/2100 * 100, 1)
-
-    return render_template('home/main.html', t_nutrition=t_nutrition, t_date=t_date, 
-                            per_nutrition=per_nutrition, sodium=t_nutrition['sodium'], carbohydrate=t_nutrition['carbohydrate'],
-                            fat=t_nutrition['fat'], cholesterol=t_nutrition['cholesterol'], protein=t_nutrition['protein'])
-
-
-# @home.route('/camera')
-# def camera():
-#     return render_template('home/camera.html')
-
-@home.route("/upload", methods=['GET', 'POST'])
+@food.route("/upload", methods=['GET', 'POST'])
 def upload():
     return render_template('home/upload.html')
 
-@home.route("/result", methods = ['GET','POST'])
+
+@food.route("/result", methods = ['GET','POST'])
 def result():
     global food_weight
     if request.method == 'POST':
@@ -224,7 +85,8 @@ def result():
         print(food_weight)
     return render_template('home/predict.html', products=products, user_image='images/output/' + filename, food_weight=food_weight)
 
-@home.route("/result_cam", methods = ['GET','POST'])
+
+@food.route("/result_cam", methods = ['GET','POST'])
 def result_cam():
     global food_weight
     if request.method == 'POST':
@@ -235,7 +97,8 @@ def result_cam():
         print(food_weight)
     return render_template('home/cam_predict.html', products=products, user_image='images/output/' + filename, food_weight=food_weight)
 
-@home.route("/predict", methods = ['GET','POST'])
+
+@food.route("/predict", methods = ['GET','POST'])
 def predict():
     with open('./static/nutrition.json') as f:
         nutrition_data = json.load(f)
@@ -331,7 +194,8 @@ def predict():
         except Exception as e:
             return "Unable to read the file. Please check if the file extension is correct."
 
-@home.route("/cam_predict/<img_name>")
+
+@food.route("/cam_predict/<img_name>")
 def cam_predict(img_name):
     with open('./static/nutrition.json') as f:
         nutrition_data = json.load(f)

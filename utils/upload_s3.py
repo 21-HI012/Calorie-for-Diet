@@ -1,12 +1,12 @@
-from flask import Blueprint, request, current_app, render_template
+from flask import request, current_app, render_template
 from werkzeug.utils import secure_filename
 from .s3_connector import S3Connector
-
-upload = Blueprint('upload', __name__)
+from . import upload
 
 @upload.route('/upload-s3')
 def upload_form():
     return render_template('upload_s3.html')
+
 
 @upload.route('/upload-to-s3', methods=['POST'])
 def upload_file():
