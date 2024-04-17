@@ -1,42 +1,11 @@
-from flask import Blueprint, request, current_app, render_template, Flask, url_for
+from flask import request, current_app, render_template, jsonify
 from werkzeug.utils import secure_filename
 import boto3
 import os
-import json
 import cv2
-import numpy as np
-import time
-import boto3
-from tensorflow.keras.models import load_model
-from PIL import Image
+
+from ..ai_model.model_label import inputdata
 from . import food
-import torch
-import numpy as np
-import cv2
-from ..darknet import *
-
-from ..utils.utils import load_classes
-import torchvision.transforms as transforms
-
-
-configuration_path = "./cfg/yolov3-spp-403cls.cfg"
-weights_path = "./weights/last_403food_e200b150v2.pt"
-labels = open("./data/403food.names").read().strip().split('\n')
-
-# Setting minimum probability to eliminate weak predictions
-probability_minimum = 0.5
-
-# Setting threshold for non maximum suppression
-threshold = 0.3
-network = Darknet(configuration_path, img_size=416)
-network.load_state_dict(torch.load(weights_path, map_location='cpu')['model'], strict=False)
-network.eval()
-
-# 이미지 전처리를 위한 트랜스폼 설정
-transform = transforms.Compose([
-    transforms.Resize((416, 416)),
-    transforms.ToTensor(),
-])
 
 
 class S3Connector:
@@ -54,16 +23,15 @@ class S3Connector:
         return f"{object_name} has been uploaded to {self.bucket_name}"
     
 
-
 def allowed_file(filename):
     # 허용된 파일 확장자 체크
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
 
 
-
 @food.route('/upload-s3')
 def upload_form():
     return render_template('upload_s3.html')
+
 
 @food.route('/upload-to-s3', methods=['POST'])
 def upload_file():
@@ -81,6 +49,7 @@ def upload_file():
         s3 = S3Connector(aws_access_key_id, aws_secret_access_key, s3_bucket_name)
         response = s3.upload_file_to_s3(file, filename)
         return response
+    
     
 @food.route("/upload", methods=['GET', 'POST'])
 def upload():
@@ -107,45 +76,62 @@ def predict():
             filename = secure_filename(file.filename)
             file_path = os.path.join('./app/static/images/input', filename)
             file.save(file_path)
+
+            img = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)  # 파일 경로에서 직접 이미지를 읽습니다
+            if img is None:
+                return jsonify({"error": "Failed to read the image"}), 400
+
+            # 이미지 처리 함수를 호출합니다
+            confidence, label = inputdata(img)  # 수정된 inputdata 함수 호출
+
+            print(label)  # 라벨 출력
+
+            return jsonify({"filename": filename, "confidence": confidence, "label": label})
             
             # 이미지 읽기 및 전처리
-            image = Image.open(file_path).convert('RGB')
-            img_tensor = transform(image).unsqueeze(0)  # 모델 입력을 위한 텐서로 변환
+            # image = Image.open(file_path).convert('RGB')
+            # img_tensor = transform(image).unsqueeze(0)  # 모델 입력을 위한 텐서로 변환
             
-            with torch.no_grad():
-                    start = time.time()
-                    outputs = network(img_tensor)
-                    detection = outputs[0]  # 모델 출력이 튜플일 경우 첫 번째 요소 사용
-                    end = time.time()
+            # with torch.no_grad():
+            #         start = time.time()
+            #         outputs = network(img_tensor)
+            #         detection = outputs[0]  # 모델 출력이 튜플일 경우 첫 번째 요소 사용
+            #         end = time.time()
             
-            print(f"YOLO v3 took {end - start:.5f} seconds")
+            # print(f"YOLO v3 took {end - start:.5f} seconds")
+            # max_value, max_index = torch.max(detection, dim=1)
+            # print("가장 큰 값:", max_value)
+            # print("가장 큰 값의 인덱스:", max_index)
 
-            # 결과 처리
-            class_names = []
-            boxes = []
-            scores = []
+            # # 결과 처리
+            # class_names = []
+            # boxes = []
+            # scores = []
 
-            for i in range(detection.size(1)):
-                if detection[0, i, 4] > probability_minimum:
-                    box = detection[0, i, :4]
-                    score = detection[0, i, 4]
-                    class_id = torch.argmax(detection[0, i, 5:])
-                    class_name = labels[class_id]
+            # for i in range(detection.size(1)):
+            #     if detection[0, i, 4] > probability_minimum:
+            #         box = detection[0, i, :4]
+            #         score = detection[0, i, 4]
+            #         max_confidence_index = torch.argmax(detection[:, 4]).item()
+            #         class_id = torch.argmax(detection[max_confidence_index, 5:]).item()
+
+            #         print(class_id)
+            #         class_name = labels[class_id]
                     
-                    boxes.append(box.tolist())
-                    scores.append(score.item())
-                    class_names.append(class_name)
+            #         boxes.append(box.tolist())
+            #         scores.append(score.item())
+            #         class_names.append(class_name)
 
-            # Draw boxes and labels on the image
-            image_np = np.array(image)
-            for box, score, class_name in zip(boxes, scores, class_names):
-                x1, y1, x2, y2 = box
-                cv2.rectangle(image_np, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
-                cv2.putText(image_np, f'{class_name}: {score:.2f}', (int(x1), int(y1-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
+            # # Draw boxes and labels on the image
+            # image_np = np.array(image)
+            # for box, score, class_name in zip(boxes, scores, class_names):
+            #     x1, y1, x2, y2 = box
+            #     cv2.rectangle(image_np, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+            #     cv2.putText(image_np, f'{class_name}: {score:.2f}', (int(x1), int(y1-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
 
-            output_file_path = './app/static/images/output/' + filename
-            cv2.imwrite(output_file_path, image_np)
+            # output_file_path = './app/static/images/output/' + filename
+            # cv2.imwrite(output_file_path, image_np)
 
-            return render_template('home/weights2.html', products=class_names, user_image='images/output/' + filename)
+    #         return render_template('home/weights2.html', products=class_names, user_image='images/output/' + filename)
 
-    return render_template('upload_form.html')
+    # return render_template('upload_form.html')
