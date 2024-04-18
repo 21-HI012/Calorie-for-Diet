@@ -16,34 +16,39 @@
       <br>오늘의 섭취 영양정보 입니다.
   </div>
   <div id="main_date" class="main_date"></div>
+  <div>
     {% for nutrition, num in t_nutrition.items() %}
     <p>{{nutrition}}: {{num}}</p>
-    <div class="graph stack1">
+    <div class="graph stack1" style="width: 100%; background-color: #e0e0e0;">
+      {% set percentage = (num / {'calories': 2500, 'sodium': 2000, 'carbohydrate': 280, 'fat': 50, 'cholesterol': 260, 'protein': 72}[nutrition] * 100) | round %}
+      {% set percentage = 100 if percentage > 100 else percentage %}
       {% if nutrition == 'calories' %}
-      <span style="width: 100%; background-color: #ffb1bb;">{{num}} / 2,500kcal</span> <!-- 남성 권장칼로리 -->
+      <span style="width: {{ percentage }}%; background-color: #ffb1bb;">{{num}} / 2,500kcal</span>
       {% endif %}
 
       {% if nutrition == 'sodium' %}
-      <span style="width: 10%; background-color: #ffbe9f;">{{num}} / 2,000mg</span>
+      <span style="width: {{ percentage }}%; background-color: #ffbe9f;">{{num}} / 2,000mg</span>
       {% endif %}
 
       {% if nutrition == 'carbohydrate' %}
-      <span style="width: 40%; background-color: #f3dd6d;">{{num}} / 280mg</span>
+      <span style="width: {{ percentage }}%; background-color: #f3dd6d;">{{num}} / 280g</span>
       {% endif %}
 
       {% if nutrition == 'fat' %}
-      <span style="width: 2%; background-color: #bae8d9;">{{num}} / 50g</span>
+      <span style="width: {{ percentage }}%; background-color: #bae8d9;">{{num}} / 50g</span>
       {% endif %}
 
       {% if nutrition == 'cholesterol' %}
-      <span style="width: 0%; background-color: #c7dbf4;">{{num}} / 260mg</span>
+      <span style="width: {{ percentage }}%; background-color: #c7dbf4;">{{num}} / 260mg</span>
       {% endif %}
 
       {% if nutrition == 'protein' %}
-      <span style="width: 50%; background-color: #d5c9dd;">{{num}} / 72g</span>
+      <span style="width: {{ percentage }}%; background-color: #d5c9dd;">{{num}} / 72g</span>
       {% endif %}
     </div>
     {% endfor %}
+  </div>
+
 
   <script>
       function date() {
