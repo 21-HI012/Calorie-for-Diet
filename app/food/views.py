@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import boto3
 import os
 import cv2
+import json
 
 from ..ai_model.model_label import inputdata
 from . import food
@@ -84,9 +85,13 @@ def predict():
             # 이미지 처리 함수를 호출합니다
             confidence, label = inputdata(img)  # 수정된 inputdata 함수 호출
 
-            print(label)  # 라벨 출력
+            with open('./app/foodnames.json', 'r', encoding='utf-8') as file:
+                food_names = json.load(file)
 
-            return jsonify({"filename": filename, "confidence": confidence, "label": label})
+            food_name = list(food_names.values())[label]
+
+
+            return jsonify({"filename": filename, "confidence": confidence, "label": label, "food_name": food_name})
             
             # 이미지 읽기 및 전처리
             # image = Image.open(file_path).convert('RGB')
