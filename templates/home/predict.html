@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/home/cam_predict.css"/>
+  <title>yolo image recognition</title>
+
+  <script>
+    $(document).ready(function () {
+      showNutrition();
+    });
+
+    function showNutrition() {
+      $.ajax({
+        type: "GET",
+        url: "./static/nutrition.json",
+        success: function (response) {
+          let nutrition = response['nutrition']
+          let products = "{{products|safe}}"
+          let food_weight = "{{food_weight|safe}}"
+          var reg = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi
+          products = products.replace(reg, "")
+          products = products.split(" ")
+          food_weight = food_weight.replace(reg, "")
+          food_weight = food_weight.split(" ")
+          console.log(food_weight)
+          for (let weight of food_weight) {
+            console.log(weight)
+          }
+          let t_calories = 0, t_sodium = 0, t_carbohydrate = 0, t_fat = 0, t_cholesterol = 0, t_protein = 0
+          for (let product of products) {
+            nutrition.filter(function (obj) {
+              if (obj['name'] === product) {
+                let name = nutrition[obj['id']]['name']
+                let weight = Number(food_weight[products.indexOf(product)])
+                let calories = nutrition[obj['id']]['calories'] * weight/100
+                let sodium = nutrition[obj['id']]['sodium'] * weight/100
+                let carbohydrate = nutrition[obj['id']]['carbohydrate'] * weight/100
+                let fat = nutrition[obj['id']]['fat'] * weight/100
+                let cholesterol = nutrition[obj['id']]['cholesterol'] * weight/100
+                let protein = nutrition[obj['id']]['protein'] * weight/100
+
+                let nutrition_html = `<tr>
+                                        <td style="font-size: 25px; font-weight:bold;">식품명/무게</td>
+                                        <td style="font-size: 25px; font-weight:bold;">${name}/${weight}g</td>
+                                      </tr>
+                                      <tr>
+                                        <td>열량(kcal)</td>
+                                        <td>${calories}</td>
+                                      </tr>
+                                      <tr>
+                                        <td>나트륨(mg)</td>
+                                        <td>${sodium}</td>
+                                      </tr>
+                                      <tr>
+                                        <td>탄수화물(mg)</td>
+                                        <td>${carbohydrate}</td>
+                                      </tr>
+                                      <tr>
+                                        <td>지방(g)</td>
+                                        <td>${fat}</td>
+                                      </tr>
+                                      <tr>
+                                        <td>콜레스테롤(mg)</td>  
+                                        <td>${cholesterol}</td>
+                                      </tr>
+                                      <tr>  
+                                        <td>단백질(g)</td>
+                                        <td>${protein}</td>                
+                                      </tr>`
+                $('#info_nutrition').append(nutrition_html)
+
+                t_calories += calories;
+                t_sodium += sodium;
+                t_carbohydrate += carbohydrate;
+                t_fat += fat;
+                t_cholesterol += cholesterol;
+                t_protein += protein;
+              }
+            });
+          }
+          
+          let t_nutrition_html = `<tr>
+                                    <td>총 열량(kcal)</td>
+                                    <td>${t_calories}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>총 나트륨(mg)</td>
+                                    <td>${t_sodium}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>총 탄수화물(g)</td>
+                                    <td>${t_carbohydrate}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>총 지방(g)</td>
+                                    <td>${t_fat}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>총 콜레스테롤(mg)</td>
+                                    <td>${t_cholesterol}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>총 단백질(g)</td>  
+                                    <td>${parseFloat(t_protein.toFixed(2))}</td>
+                                  </tr><br>`
+          $('#t_info_nutrition').append(t_nutrition_html)
+        }
+      })
+    }
+  </script>
+</head>
+
+<body>
+    {% include 'home/side.html' %}
+    <div class="cam_predict_name">인식 결과</div>
+    <div class="cam_predict_intro">촬영한 음식들을 인식하고 영양정보를 보여줍니다.</div>
+    <div class="cam_predict_image"><img src="{{ url_for('static', filename = user_image)}}" alt="User Image" class="cam_predict_img"></div>
+    
+    <div>
+    <table class="table">
+      <tbody id="info_nutrition">
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <hr>
+    <p style="font-size: 25px; font-weight: bold; text-align: center;">총 영양정보</p>
+    <table class="table">
+      <tbody id="t_info_nutrition">
+      </tbody>
+    </table>
+    </div>
+    <div class="save_btn"><a href="{{url_for('food.food_record')}}" style="text-decoration: none; color: white">저장하기</a></div>
+
+    <!-- <script>
+      var number = $('#food-number').val()
+      console.log("\n\nnumber:", number)
+  </script> -->
+</body>
+
+</html>

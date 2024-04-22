@@ -1,10 +1,5 @@
 FROM mysql:latest
 
-ENV MYSQL_ROOT_PASSWORD=syu22Hanium!
-ENV MYSQL_DATABASE=hanium
-ENV MYSQL_USER=test-user
-ENV MYSQL_PASSWORD=test-password
-
 COPY init_db.sh /docker-entrypoint-initdb.d/init_db.sh
 RUN chmod +x /docker-entrypoint-initdb.d/init_db.sh
 

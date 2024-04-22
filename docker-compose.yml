@@ -12,6 +12,8 @@ services:
       - intra
     depends_on:
       - db
+    env_file:
+      - .env
     restart: always
 
   db:
@@ -23,6 +25,8 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - intra
+    env_file:
+      - .env
     restart: always
 
 volumes:
