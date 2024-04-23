@@ -6,7 +6,7 @@ class Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     record_id = db.Column(db.Integer, ForeignKey('record.id'))
     name = db.Column(db.String(1000))
-    weight = db.Column(db.Integer, default=100, nullable=True)
+    weight = db.Column(db.Integer, nullable=True)
     calories = db.Column(db.Float)
     sodium = db.Column(db.Float)
     carbohydrate = db.Column(db.Float)

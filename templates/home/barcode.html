@@ -15,68 +15,76 @@
         document.addEventListener('DOMContentLoaded', function () {
             var socket = io.connect('http://127.0.0.1:5000');
             socket.on('barcode', function(data) {
-                showFood(data.code);
+                showFood(data.food_info);
             });
         });
 
-        function showFood(my_code) {
-            $.ajax({
-                type: "GET",
-                url: "./static/food.json",
-                success: function (response) {
-                    const food = response['food'];
-                    const item = food.find(obj => obj['barcode'] === my_code);
-
-                    if (item) {
-                        let record_html = `
-                            <h2>바코드 인식 결과: 영양정보를 표시합니다.</h2>
-                            <table class="table">
-                                <tr>
-                                    <td style="font-size: 25px; font-weight:bold;">식품명/내용량</td>
-                                    <td style="font-size: 25px; font-weight:bold;">${item.name}/${item.weight}g</td>
-                                </tr>
-                                <tr>
-                                    <td>열량(kcal)</td>
-                                    <td>${item.calories}</td>
-                                </tr>
-                                <tr>
-                                    <td>나트륨(mg)</td>
-                                    <td>${item.sodium}</td>
-                                </tr>
-                                <tr>
-                                    <td>탄수화물(g)</td>
-                                    <td>${item.carbohydrate}</td>
-                                </tr>
-                                <tr>
-                                    <td>지방(g)</td>
-                                    <td>${item.fat}</td>
-                                </tr>
-                                <tr>
-                                    <td>콜레스테롤(mg)</td>
-                                    <td>${item.cholesterol}</td>
-                                </tr>
-                                <tr>
-                                    <td>단백질(g)</td>
-                                    <td>${item.protein}</td>
-                                </tr>
-                            </table>
-                        `;
-                        $('#result').html(record_html);
-                        updateSaveButton(my_code);
-                    } else {
-                        $('#result').html('<h2>해당 식품을 찾을 수 없습니다.</h2>');
-                    }
-                },
-                error: function (error) {
-                    $('#result').html('<h2>데이터를 불러오는 중 오류가 발생했습니다.</h2>');
-                }
-            })
+        function showFood(info) {
+            if (info) {
+                let record_html = `
+                    <h2>바코드 인식 결과: 영양정보를 표시합니다.</h2>
+                    <table class="table">
+                        <tr>
+                            <td style="font-size: 25px; font-weight:bold;">식품명/내용량</td>
+                            <td style="font-size: 25px; font-weight:bold;">${info.name}/${info.weight}g</td>
+                        </tr>
+                        <tr>
+                            <td>열량(kcal)</td>
+                            <td>${info.calories}</td>
+                        </tr>
+                        <tr>
+                            <td>나트륨(mg)</td>
+                            <td>${info.sodium}</td>
+                        </tr>
+                        <tr>
+                            <td>탄수화물(g)</td>
+                            <td>${info.carbohydrate}</td>
+                        </tr>
+                        <tr>
+                            <td>지방(g)</td>
+                            <td>${info.fat}</td>
+                        </tr>
+                        <tr>
+                            <td>콜레스테롤(mg)</td>
+                            <td>${info.cholesterol}</td>
+                        </tr>
+                        <tr>
+                            <td>단백질(g)</td>
+                            <td>${info.protein}</td>
+                        </tr>
+                    </table>
+                `;
+                $('#result').html(record_html);
+                updateSaveButton(info);
+            } else {
+                $('#result').html('<h2>해당 식품을 찾을 수 없습니다.</h2>');
+            }
         }
 
-        function updateSaveButton(my_code) {
-            var url = `/barcode_record/${my_code}`;
-            let save_button_html = `<div class="save_btn"><a href="${url}" style="text-decoration: none; color: white">저장하기</a></div>`;
+        function updateSaveButton(info) {
+            let save_button_html = `
+                <button id="saveButton" style="text-decoration: none; color: white">저장하기</button>
+                `;
             $('#result').append(save_button_html);
+
+            $('#saveButton').on('click', function() {
+                saveFoodInfo(info);
+            });
+        }
+
+        function saveFoodInfo(info) {
+            $.ajax({
+                url: `/barcode_record`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(info),
+                success: function(response) {
+                    window.location.href = '/record';
+                },
+                error: function(response) {
+                    alert('저장 실패: ' + response.responseJSON);
+                }
+            });
         }
     </script>
 </head>
