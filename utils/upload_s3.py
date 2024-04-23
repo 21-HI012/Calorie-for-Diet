@@ -24,3 +24,4 @@ def upload_file():
         s3 = S3Connector(aws_access_key_id, aws_secret_access_key, s3_bucket_name)
         response = s3.upload_file_to_s3(file, filename)
         return response
+

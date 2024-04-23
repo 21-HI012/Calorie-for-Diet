@@ -13,8 +13,7 @@ from .user import user as user_blueprint
 from .cam import cam as cam_blueprint
 from .record import record as record_blueprint
 from .detection import barcode as barcode_blueprint
-from .detection import food as food_blueprint
-from .utils import upload as upload_blueprint
+from .food import food as food_blueprint
 
 from .auth.models import User
 
@@ -49,6 +48,5 @@ def create_app():
     app.register_blueprint(record_blueprint)
     app.register_blueprint(barcode_blueprint)
     app.register_blueprint(food_blueprint)
-    app.register_blueprint(upload_blueprint)
 
     return app
