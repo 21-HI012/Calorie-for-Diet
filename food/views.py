@@ -85,7 +85,7 @@ def result():
 
 def get_nutrition_data(query):
     api_url = 'https://api.calorieninjas.com/v1/nutrition?query='
-    api_key = 'DAL6Idg3vOt/hviG9ic1Xg==Xc3cWPLf0iuk4v6i'
+    api_key = os.getenv('FOOD_API_KEY')
     response = requests.get(api_url + query, headers={'X-Api-Key': api_key})
     if response.status_code == 200:
         return response.json()['items']
@@ -112,6 +112,8 @@ def predict():
                 cls = box.cls 
                 class_label = model.names[int(cls)]
                 products.append(class_label)
+
+            products = list(set(products))
 
             return render_template('home/weights2.html', products=products, user_image='images/output/' + filename)
 
