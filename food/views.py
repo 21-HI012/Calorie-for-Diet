@@ -12,15 +12,6 @@ from ultralytics import YOLO
 import pandas
 import requests
 
-labels = open("./data/coco.names").read().strip().split('\n')
-
-# COCO 데이터셋의 클래스 이름에서 특정 객체의 인덱스 찾기
-interested_classes = ['banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake']  # 관심 있는 객체 클래스
-class_indexes = [labels.index(cls) for cls in interested_classes if cls in labels]
-print("Class indexes of interest:", class_indexes)
-
-colors = np.random.randint(0, 255, size=(len(labels), 3), dtype="uint8")
-
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
