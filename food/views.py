@@ -1,15 +1,9 @@
-from flask import request, current_app, render_template, jsonify
+from flask import request, current_app, render_template
 from werkzeug.utils import secure_filename
+from . import food
+from ultralytics import YOLO
 import boto3
 import os
-import cv2
-import json
-from ..ai_model.model_label import inputdata
-from . import food
-import numpy as np
-import time
-from ultralytics import YOLO
-import pandas
 import requests
 
 
@@ -91,7 +85,7 @@ def result():
 
 def get_nutrition_data(query):
     api_url = 'https://api.calorieninjas.com/v1/nutrition?query='
-    api_key = 'DAL6Idg3vOt/hviG9ic1Xg==Xc3cWPLf0iuk4v6i'  # 여기에 실제 API 키를 입력하세요.
+    api_key = 'DAL6Idg3vOt/hviG9ic1Xg==Xc3cWPLf0iuk4v6i'
     response = requests.get(api_url + query, headers={'X-Api-Key': api_key})
     if response.status_code == 200:
         return response.json()['items']
