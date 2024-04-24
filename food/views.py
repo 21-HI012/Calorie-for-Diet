@@ -4,9 +4,20 @@ import boto3
 import os
 import cv2
 import json
-
 from ..ai_model.model_label import inputdata
 from . import food
+import numpy as np
+import time
+from ultralytics import YOLO
+import pandas
+import requests
+
+
+ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 class S3Connector:
@@ -57,20 +68,40 @@ def upload():
     return render_template('home/upload.html')
 
 
-# @food.route("/result", methods = ['GET','POST'])
-# def result():
-#     global food_weight
-#     if request.method == 'POST':
-#         food_weight = []
-#         for food in products:
-#             weight = request.form.get(food)
-#             food_weight.append(weight)
-#         print(food_weight)
-#     return render_template('home/predict.html', products=products, user_image='images/output/' + filename, food_weight=food_weight)
+@food.route("/result", methods=['GET', 'POST'])
+def result():
+    global food_weight, products, filename
+    if request.method == 'POST':
+        food_weight = []
+        food_query = []
+        nutrition_data = {}
+        for food in products:
+            weight = request.form.get(food)
+            if weight:  # 무게 데이터가 있다면 쿼리 스트링 생성
+                food_query.append(f"{weight}g {food}")
+            food_weight.append(weight)
+        # API 호출을 위한 쿼리 스트링 조합
+            query_string = ','.join(food_query)
+            nutrition_data[food] = get_nutrition_data(query_string)
 
+        print(nutrition_data)
+        return render_template('home/predict.html', products=products, user_image='images/output/' + filename, food_weight=food_weight, nutrition_data=nutrition_data)
+    else:
+        return render_template('home/predict.html', products=products, user_image='images/output/' + filename)
+
+def get_nutrition_data(query):
+    api_url = 'https://api.calorieninjas.com/v1/nutrition?query='
+    api_key = 'DAL6Idg3vOt/hviG9ic1Xg==Xc3cWPLf0iuk4v6i'  # 여기에 실제 API 키를 입력하세요.
+    response = requests.get(api_url + query, headers={'X-Api-Key': api_key})
+    if response.status_code == 200:
+        return response.json()['items']
+    else:
+        print("Error:", response.status_code, response.text)
+        return []
 
 @food.route("/predict", methods=['GET', 'POST'])
 def predict():
+    global products, filename
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
@@ -78,65 +109,17 @@ def predict():
             file_path = os.path.join('./static/images/input', filename)
             file.save(file_path)
 
-            img = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)  # 파일 경로에서 직접 이미지를 읽습니다
-            if img is None:
-                return jsonify({"error": "Failed to read the image"}), 400
-
-            # 이미지 처리 함수를 호출합니다
-            confidence, label = inputdata(img)  # 수정된 inputdata 함수 호출
-
-            with open('./foodnames.json', 'r', encoding='utf-8') as file:
-                food_names = json.load(file)
-
-            food_name = list(food_names.values())[label]
-
-
-            return jsonify({"filename": filename, "confidence": confidence, "label": label, "food_name": food_name})
+            # YOLOv8로 이미지 읽기 및 예측
+            model = YOLO('yolov8n.pt')
+            results = model.predict(source=file_path, save=True, project="static/images", name="output", exist_ok=True)
             
-            # 이미지 읽기 및 전처리
-            # image = Image.open(file_path).convert('RGB')
-            # img_tensor = transform(image).unsqueeze(0)  # 모델 입력을 위한 텐서로 변환
+            products = []
+            for box in results[0].boxes:
+                cls = box.cls 
+                class_label = model.names[int(cls)]
+                products.append(class_label)
+
+            return render_template('home/weights2.html', products=products, user_image='images/output/' + filename)
+
+    return render_template('home/upload.html')
             
-            # with torch.no_grad():
-            #         start = time.time()
-            #         outputs = network(img_tensor)
-            #         detection = outputs[0]  # 모델 출력이 튜플일 경우 첫 번째 요소 사용
-            #         end = time.time()
-            
-            # print(f"YOLO v3 took {end - start:.5f} seconds")
-            # max_value, max_index = torch.max(detection, dim=1)
-            # print("가장 큰 값:", max_value)
-            # print("가장 큰 값의 인덱스:", max_index)
-
-            # # 결과 처리
-            # class_names = []
-            # boxes = []
-            # scores = []
-
-            # for i in range(detection.size(1)):
-            #     if detection[0, i, 4] > probability_minimum:
-            #         box = detection[0, i, :4]
-            #         score = detection[0, i, 4]
-            #         max_confidence_index = torch.argmax(detection[:, 4]).item()
-            #         class_id = torch.argmax(detection[max_confidence_index, 5:]).item()
-
-            #         print(class_id)
-            #         class_name = labels[class_id]
-                    
-            #         boxes.append(box.tolist())
-            #         scores.append(score.item())
-            #         class_names.append(class_name)
-
-            # # Draw boxes and labels on the image
-            # image_np = np.array(image)
-            # for box, score, class_name in zip(boxes, scores, class_names):
-            #     x1, y1, x2, y2 = box
-            #     cv2.rectangle(image_np, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
-            #     cv2.putText(image_np, f'{class_name}: {score:.2f}', (int(x1), int(y1-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
-
-            # output_file_path = './app/static/images/output/' + filename
-            # cv2.imwrite(output_file_path, image_np)
-
-    #         return render_template('home/weights2.html', products=class_names, user_image='images/output/' + filename)
-
-    # return render_template('upload_form.html')
