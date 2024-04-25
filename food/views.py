@@ -33,11 +33,6 @@ class S3Connector:
         object_name = secure_filename(filename)
         self.s3_client.upload_fileobj(file, self.bucket_name, object_name)
         return f"{object_name} has been uploaded to {self.bucket_name}"
-    
-
-def allowed_file(filename):
-    # 허용된 파일 확장자 체크
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
 
 
 @food.route('/upload-s3')
@@ -72,22 +67,19 @@ def upload():
 def result():
     global food_weight, products, filename
     if request.method == 'POST':
-        food_weight = []
         food_query = []
         nutrition_data = {}
-        for food in products:
-            weight = request.form.get(food)
-            if weight:  # 무게 데이터가 있다면 쿼리 스트링 생성
+        for food, weight in request.form.items():
+            if weight:
                 food_query.append(f"{weight}g {food}")
-            food_weight.append(weight)
             # API 호출을 위한 쿼리 스트링 조합
-            query_string = ','.join(food_query)
-            nutrition_data[food] = get_nutrition_data(query_string)
+            query_string = ' and '.join(food_query)
 
-            session['nutrition_data'] = nutrition_data  # 세션에 저장
-
+        nutrition_data = get_nutrition_data(query_string)
         print(nutrition_data)
-        return render_template('home/predict.html', products=products, user_image='images/output/' + filename, food_weight=food_weight, nutrition_data=nutrition_data)
+        session['nutrition_data'] = nutrition_data  # 세션ddp 저장
+
+        return render_template('home/predict.html', products=products, user_image='images/output/' + filename, nutrition_data=nutrition_data)
     else:
         return render_template('home/predict.html', products=products, user_image='images/output/' + filename)
 
@@ -131,22 +123,22 @@ def predict():
 @food.route("/save_result", methods=['POST'])
 def save_result():
     nutrition_data = session.get('nutrition_data')  # 세션에서 데이터 가져오기
-    
+
     new_record = Record(user_id=current_user.id, date=datetime.now())
     db.session.add(new_record)
     db.session.commit()
 
     if nutrition_data:
-        for food, data in nutrition_data.items():
+        for data in nutrition_data:
             new_food = Food(record_id=new_record.id,
-                    name = data[0]['name'],
-                    weight = data[0]['serving_size_g'],
-                    calories = data[0]['calories'], 
-                    sodium = data[0]['sodium_mg'], 
-                    carbohydrate = data[0]['carbohydrates_total_g'], 
-                    fat = data[0]['fat_total_g'], 
-                    cholesterol = data[0]['cholesterol_mg'],
-                    protein = data[0]['protein_g'])
+                    name = data['name'],
+                    weight = data['serving_size_g'],
+                    calories = data['calories'], 
+                    sodium = data['sodium_mg'], 
+                    carbohydrate = data['carbohydrates_total_g'], 
+                    fat = data['fat_total_g'], 
+                    cholesterol = data['cholesterol_mg'],
+                    protein = data['protein_g'])
             db.session.add(new_food)
         db.session.commit()
 

@@ -41,16 +41,16 @@
         </tr>
       </thead>
       <tbody>
-        {% for food, data in nutrition_data.items() %}
+        {% for data in nutrition_data %}
         <tr>
-          <td>{{ data[0]['name'] }}</td>
-          <td>{{ data[0]['serving_size_g'] }}</td>
-          <td>{{ data[0]['calories'] }}</td>
-          <td>{{ data[0]['sodium_mg'] }}</td>
-          <td>{{ data[0]['carbohydrates_total_g'] }}</td>
-          <td>{{ data[0]['fat_total_g'] }}</td>
-          <td>{{ data[0]['cholesterol_mg'] }}</td>
-          <td>{{ data[0]['protein_g'] }}</td>
+          <td>{{ data['name'] }}</td>
+          <td>{{ data['serving_size_g'] }}</td>
+          <td>{{ data['calories'] }}</td>
+          <td>{{ data['sodium_mg'] }}</td>
+          <td>{{ data['carbohydrates_total_g'] }}</td>
+          <td>{{ data['fat_total_g'] }}</td>
+          <td>{{ data['cholesterol_mg'] }}</td>
+          <td>{{ data['protein_g'] }}</td>
         </tr>
         {% endfor %}
       </tbody>
