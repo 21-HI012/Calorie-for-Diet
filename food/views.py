@@ -1,10 +1,16 @@
-from flask import request, current_app, render_template
+from flask import request, current_app, render_template, session, Response
 from werkzeug.utils import secure_filename
 from . import food
 from ultralytics import YOLO
 import boto3
 import os
 import requests
+from flask_login import current_user
+from datetime import datetime
+from ..record.models import Record
+from ..food.models import Food
+from ..extension import db
+from ..user.routes import record as day_record
 
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
@@ -74,9 +80,11 @@ def result():
             if weight:  # 무게 데이터가 있다면 쿼리 스트링 생성
                 food_query.append(f"{weight}g {food}")
             food_weight.append(weight)
-        # API 호출을 위한 쿼리 스트링 조합
+            # API 호출을 위한 쿼리 스트링 조합
             query_string = ','.join(food_query)
             nutrition_data[food] = get_nutrition_data(query_string)
+
+            session['nutrition_data'] = nutrition_data  # 세션에 저장
 
         print(nutrition_data)
         return render_template('home/predict.html', products=products, user_image='images/output/' + filename, food_weight=food_weight, nutrition_data=nutrition_data)
@@ -118,4 +126,39 @@ def predict():
             return render_template('home/weights2.html', products=products, user_image='images/output/' + filename)
 
     return render_template('home/upload.html')
+
+
+@food.route("/save_result", methods=['POST'])
+def save_result():
+    nutrition_data = session.get('nutrition_data')  # 세션에서 데이터 가져오기
+    
+    new_record = Record(user_id=current_user.id, date=datetime.now())
+    db.session.add(new_record)
+    db.session.commit()
+
+    if nutrition_data:
+        for food, data in nutrition_data.items():
+            new_food = Food(record_id=new_record.id,
+                    name = data[0]['name'],
+                    weight = data[0]['serving_size_g'],
+                    calories = data[0]['calories'], 
+                    sodium = data[0]['sodium_mg'], 
+                    carbohydrate = data[0]['carbohydrates_total_g'], 
+                    fat = data[0]['fat_total_g'], 
+                    cholesterol = data[0]['cholesterol_mg'],
+                    protein = data[0]['protein_g'])
+            db.session.add(new_food)
+        db.session.commit()
+
+        t_record = Record.query.order_by(Record.id.desc()).first()
+        t_record.t_calories += new_food.calories
+        t_record.t_sodium += new_food.sodium
+        t_record.t_carbohydrate += new_food.carbohydrate
+        t_record.t_fat += new_food.fat
+        t_record.t_cholesterol += new_food.cholesterol
+        t_record.t_protein += new_food.protein
+        db.session.commit()
+
+        return Response(day_record())
+    return '저장할 데이터가 없습니다.'
             

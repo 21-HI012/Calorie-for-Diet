@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 import os
 # from flask_socketio import SocketIO
 from .extension import db, socketio
-from flask_sqlalchemy import SQLAlchemy
 
 from .main import home as home_blueprint
 from .auth import auth as auth_blueprint

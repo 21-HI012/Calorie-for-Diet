@@ -25,6 +25,7 @@
       </div>
   
     <h1>영양 정보</h1>
+    <form method="post" action="/save_result">
     <table class="table">
       <thead>
         <tr>
@@ -34,20 +35,27 @@
           <th>나트륨 (mg)</th>
           <th>탄수화물 (g)</th>
           <th>지방 (g)</th>
+          <th>콜레스테롤 (mg)</th>
+          <th>단백질 (g)</th>
+          
         </tr>
       </thead>
       <tbody>
         {% for food, data in nutrition_data.items() %}
         <tr>
           <td>{{ data[0]['name'] }}</td>
-          <td>{{ food_weight[loop.index0] }}</td>
+          <td>{{ data[0]['serving_size_g'] }}</td>
           <td>{{ data[0]['calories'] }}</td>
           <td>{{ data[0]['sodium_mg'] }}</td>
           <td>{{ data[0]['carbohydrates_total_g'] }}</td>
           <td>{{ data[0]['fat_total_g'] }}</td>
+          <td>{{ data[0]['cholesterol_mg'] }}</td>
+          <td>{{ data[0]['protein_g'] }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    <button type="submit">저장하기</button>
+    </form>
   </body>
 </html>
