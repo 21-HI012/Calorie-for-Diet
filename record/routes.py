@@ -3,7 +3,7 @@ from flask_login import current_user
 from datetime import datetime
 import json
 from .models import Record
-from ..detection.models import Food
+from ..food.models import Food
 from ..user.routes import record as day_record
 from ..extension import db
 from . import record

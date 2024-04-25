@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from datetime import datetime
 from datetime import timedelta
 from ..record.models import Record
-from ..detection.models import Food
+from ..food.models import Food
 from ..auth.models import User
 from ..extension import db
 from . import user

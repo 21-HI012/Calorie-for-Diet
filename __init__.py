@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 # from flask_socketio import SocketIO
 from .extension import db, socketio
+from flask_sqlalchemy import SQLAlchemy
 
 from .main import home as home_blueprint
 from .auth import auth as auth_blueprint
@@ -22,16 +23,17 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = 'secret-key-goes-here'
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{os.getenv('MYSQL_ROOT_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
-    app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    # app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{os.getenv('MYSQL_ROOT_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
+    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     app.config.from_object(DevelopmentConfig)
 
     db.init_app(app)
     Migrate(app, db)
     socketio.init_app(app)
+
+    with app.app_context():
+        db.create_all()
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
