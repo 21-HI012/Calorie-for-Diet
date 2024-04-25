@@ -11,6 +11,7 @@ from ..record.models import Record
 from ..food.models import Food
 from ..extension import db
 from ..user.routes import record as day_record
+from ..config import Config
 
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
@@ -20,43 +21,12 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-class S3Connector:
-    def __init__(self, access_key, secret_key, bucket_name):
-        self.s3_client = boto3.client(
-            's3',
-            aws_access_key_id=access_key,
-            aws_secret_access_key=secret_key
-        )
-        self.bucket_name = bucket_name
+def s3_connection():
+    s3 = boto3.client('s3', 
+                      aws_access_key_id = Config.AWS_ACCESS_KEY_ID, 
+                      aws_secret_access_key = Config.AWS_SECRET_ACCESS_KEY)
+    return s3
 
-    def upload_file_to_s3(self, file, filename):
-        object_name = secure_filename(filename)
-        self.s3_client.upload_fileobj(file, self.bucket_name, object_name)
-        return f"{object_name} has been uploaded to {self.bucket_name}"
-
-
-@food.route('/upload-s3')
-def upload_form():
-    return render_template('upload_s3.html')
-
-
-@food.route('/upload-to-s3', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return 'No file part'
-    file = request.files['file']
-    if file.filename == '':
-        return 'No selected file'
-    if file:
-        filename = secure_filename(file.filename)
-        aws_access_key_id = current_app.config['AWS_ACCESS_KEY_ID']
-        aws_secret_access_key = current_app.config['AWS_SECRET_ACCESS_KEY']
-        s3_bucket_name = current_app.config['S3_BUCKET_NAME']
-        
-        s3 = S3Connector(aws_access_key_id, aws_secret_access_key, s3_bucket_name)
-        response = s3.upload_file_to_s3(file, filename)
-        return response
-    
     
 @food.route("/upload", methods=['GET', 'POST'])
 def upload():
@@ -65,7 +35,7 @@ def upload():
 
 @food.route("/result", methods=['GET', 'POST'])
 def result():
-    global food_weight, products, filename
+    global products, filename, user_image
     if request.method == 'POST':
         food_query = []
         nutrition_data = {}
@@ -76,12 +46,14 @@ def result():
             query_string = ' and '.join(food_query)
 
         nutrition_data = get_nutrition_data(query_string)
-        print(nutrition_data)
-        session['nutrition_data'] = nutrition_data  # 세션ddp 저장
+    
+        session['nutrition_data'] = nutrition_data  # 세션 저장
 
-        return render_template('home/predict.html', products=products, user_image='images/output/' + filename, nutrition_data=nutrition_data)
+        user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/output/{filename}'
+
+        return render_template('home/predict.html', products=products, user_image=user_image, nutrition_data=nutrition_data)
     else:
-        return render_template('home/predict.html', products=products, user_image='images/output/' + filename)
+        return render_template('home/predict.html', products=products, user_image=user_image)
 
 def get_nutrition_data(query):
     api_url = 'https://api.calorieninjas.com/v1/nutrition?query='
@@ -100,13 +72,24 @@ def predict():
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = os.path.join('./static/images/input', filename)
-            file.save(file_path)
+
+            s3 = s3_connection()
+            s3.upload_fileobj(file, Config.S3_BUCKET_NAME, f"input/{filename}")
+
+            file_path = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/input/{filename}'
 
             # YOLOv8로 이미지 읽기 및 예측
             model = YOLO('yolov8n.pt')
             results = model.predict(source=file_path, save=True, project="static/images", name="output", exist_ok=True)
-            
+
+            output_file_path = os.path.join('static/images/output', filename)
+
+            # 결과 s3 업로드
+            s3.upload_file(output_file_path, Config.S3_BUCKET_NAME, f"output/{filename}")
+
+            # 로컬 파일 삭제
+            os.remove(output_file_path)
+
             products = []
             for box in results[0].boxes:
                 cls = box.cls 
@@ -124,7 +107,7 @@ def predict():
 def save_result():
     nutrition_data = session.get('nutrition_data')  # 세션에서 데이터 가져오기
 
-    new_record = Record(user_id=current_user.id, date=datetime.now())
+    new_record = Record(user_id=current_user.id, date=datetime.now(), image = user_image)
     db.session.add(new_record)
     db.session.commit()
 

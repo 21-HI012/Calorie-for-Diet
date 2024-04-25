@@ -7,7 +7,7 @@ class Record(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'))
     date = db.Column(db.DateTime)
-    image = db.Column(db.String(100), nullable=True)
+    image = db.Column(db.String(500), nullable=True)
     t_calories = db.Column(db.Float, default=0, nullable=True)
     t_sodium = db.Column(db.Float, default=0, nullable=True)
     t_carbohydrate = db.Column(db.Float, default=0, nullable=True)
