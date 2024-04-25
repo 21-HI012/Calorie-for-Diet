@@ -35,7 +35,7 @@ def upload():
 
 @food.route("/result", methods=['GET', 'POST'])
 def result():
-    global products, filename, user_image
+    global products, filename
     if request.method == 'POST':
         food_query = []
         nutrition_data = {}
@@ -48,8 +48,6 @@ def result():
         nutrition_data = get_nutrition_data(query_string)
     
         session['nutrition_data'] = nutrition_data  # 세션 저장
-
-        user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/output/{filename}'
 
         return render_template('home/predict.html', products=products, user_image=user_image, nutrition_data=nutrition_data)
     else:
@@ -67,7 +65,7 @@ def get_nutrition_data(query):
 
 @food.route("/predict", methods=['GET', 'POST'])
 def predict():
-    global products, filename
+    global products, filename, user_image
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
@@ -89,6 +87,7 @@ def predict():
 
             # 로컬 파일 삭제
             os.remove(output_file_path)
+            os.remove(os.path.join('', filename))
 
             products = []
             for box in results[0].boxes:
@@ -98,7 +97,9 @@ def predict():
 
             products = list(set(products))
 
-            return render_template('home/weights2.html', products=products, user_image='images/output/' + filename)
+            user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/output/{filename}'
+
+            return render_template('home/weights2.html', products=products, user_image=user_image)
 
     return render_template('home/upload.html')
 
