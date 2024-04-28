@@ -55,7 +55,7 @@ def result():
 
 def get_nutrition_data(query):
     api_url = 'https://api.calorieninjas.com/v1/nutrition?query='
-    api_key = os.getenv('FOOD_API_KEY')
+    api_key = Config.FOOD_API_KEY
     response = requests.get(api_url + query, headers={'X-Api-Key': api_key})
     if response.status_code == 200:
         return response.json()['items']
