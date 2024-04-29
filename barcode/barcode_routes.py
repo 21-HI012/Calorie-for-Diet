@@ -10,23 +10,26 @@ def scan_barcode():
     cap.set(3, 320)
     cap.set(4, 240)
 
-    while True:
-        success, frame = cap.read()
-        if not success:
-            break
+    try:
+        while True:
+            success, frame = cap.read()
+            if not success:
+                break
 
-        for code in pyzbar.decode(frame):
-            my_code = code.data.decode('utf-8')
-            if my_code:
-                cap.release()
-                cv2.destroyAllWindows()
-                get_and_save_food_info(my_code)
-        
-        ret, buffer = cv2.imencode('.jpg', frame)
-        byte_image = buffer.tobytes()
+            for code in pyzbar.decode(frame):
+                my_code = code.data.decode('utf-8')
+                if my_code:
+                    get_and_save_food_info(my_code)
+            
+            ret, buffer = cv2.imencode('.jpg', frame)
+            byte_image = buffer.tobytes()
 
-        yield (b'--frame\r\n'
-            b'Content-Type: image/jpeg\r\n\r\n' + byte_image + b'\r\n')
+            yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + byte_image + b'\r\n')
+    
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
 
 
 @barcode.route('/video_feed')
@@ -69,7 +72,7 @@ def get_and_save_food_info(my_code):
         socketio.emit('barcode', {'food_info': food_info})
 
     else:
-        print("Product not found")
+        socketio.emit('no_match_data')
 
 
 @barcode.route('/barcode')
