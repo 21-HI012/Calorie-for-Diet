@@ -17,6 +17,10 @@
     <img src="{{ url_for('barcode.video_feed') }}" id="videoFeed" />
     <div id="result"></div>
 
+    <div id="noMatchMessage" style="display:none;">
+        <h3>일치하는 정보가 없습니다.</h3>
+    </div>
+
     <div id="manualInput" style="display:none;">
         <h2>식품 정보 직접 입력</h2>
         <form id="manualForm">
@@ -32,18 +36,40 @@
         </form>
     </div>
     <button id="manualEntryButton" style="margin-top: 10px;">직접 입력</button>
+    <button id="rescanButton" style="margin-top: 10px; display: none;">재인식하기</button>
+
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function () {
             var socket = io.connect('http://127.0.0.1:5000');
+            
             socket.on('barcode', function(data) {
+                $('#videoFeed').hide();
+                $('#manualEntryButton').hide();
                 showFood(data.food_info);
+            });
+
+            socket.on('no_match_data', function() {
+                $('#videoFeed').hide();
+                $('#noMatchMessage').show();
+                $('#manualInput').show();
+                $('#manualEntryButton').hide();
+                $('#rescanButton').show();
             });
         });
 
         $('#manualEntryButton').click(function() {
             $('#videoFeed').hide();
             $('#manualInput').show();
+            $('#manualEntryButton').hide();
+        });
+
+        $('#rescanButton').click(function() {
+            $('#videoFeed').attr('src', "{{ url_for('barcode.video_feed') }}");
+            $('#videoFeed').show();
+            $('#manualInput').hide();
+            $('#noMatchMessage').hide();
+            $('#result').empty();
         });
 
         $('#manualForm').submit(function(event) {
