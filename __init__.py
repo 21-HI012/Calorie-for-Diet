@@ -12,7 +12,7 @@ from .auth import auth as auth_blueprint
 from .user import user as user_blueprint
 from .cam import cam as cam_blueprint
 from .record import record as record_blueprint
-from .detection import barcode as barcode_blueprint
+from .barcode import barcode as barcode_blueprint
 from .food import food as food_blueprint
 
 from .auth.models import User

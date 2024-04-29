@@ -10,6 +10,28 @@
 
     <link rel="stylesheet" type="text/css" href="../../static/home/barcode.css"/>
     <title>바코드 인식</title>
+</head>
+
+<body>
+    <!-- {% include 'home/side.html' %} -->
+    <img src="{{ url_for('barcode.video_feed') }}" id="videoFeed" />
+    <div id="result"></div>
+
+    <div id="manualInput" style="display:none;">
+        <h2>식품 정보 직접 입력</h2>
+        <form id="manualForm">
+            식품명: <input type="text" id="manualName" required><br>
+            내용량(g): <input type="number" id="manualWeight" required><br>
+            열량(kcal): <input type="number" id="manualCalories" required><br>
+            나트륨(mg): <input type="number" id="manualSodium" required><br>
+            탄수화물(g): <input type="number" id="manualCarbohydrate" required><br>
+            지방(g): <input type="number" id="manualFat" required><br>
+            콜레스테롤(mg): <input type="number" id="manualCholesterol" required><br>
+            단백질(g): <input type="number" id="manualProtein" required><br>
+            <button type="submit">정보 저장</button>
+        </form>
+    </div>
+    <button id="manualEntryButton" style="margin-top: 10px;">직접 입력</button>
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function () {
@@ -17,6 +39,26 @@
             socket.on('barcode', function(data) {
                 showFood(data.food_info);
             });
+        });
+
+        $('#manualEntryButton').click(function() {
+            $('#videoFeed').hide();
+            $('#manualInput').show();
+        });
+
+        $('#manualForm').submit(function(event) {
+            event.preventDefault(); // 기본 제출 동작 방지
+            let info = {
+                name: $('#manualName').val(),
+                weight: $('#manualWeight').val(),
+                calories: $('#manualCalories').val(),
+                sodium: $('#manualSodium').val(),
+                carbohydrate: $('#manualCarbohydrate').val(),
+                fat: $('#manualFat').val(),
+                cholesterol: $('#manualCholesterol').val(),
+                protein: $('#manualProtein').val()
+            };
+            saveFoodInfo(info);
         });
 
         function showFood(info) {
@@ -87,12 +129,6 @@
             });
         }
     </script>
-</head>
-
-<body>
-    <!-- {% include 'home/side.html' %} -->
-    <img src="{{ url_for('barcode.video_feed') }}" />
-    <div id="result"></div>
 </body>
 
 </html>
