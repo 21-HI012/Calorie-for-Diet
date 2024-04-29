@@ -109,6 +109,7 @@ def save_result():
     nutrition_data = session.get('nutrition_data')  # 세션에서 데이터 가져오기
 
     new_record = Record(user_id=current_user.id, date=datetime.now(), image = user_image)
+    new_record.image = user_image
     db.session.add(new_record)
     db.session.commit()
 

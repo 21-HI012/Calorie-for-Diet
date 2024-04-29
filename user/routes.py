@@ -23,11 +23,7 @@ def record():
         p_date = t_date - timedelta(days=d)
         dates.append(p_date)
 
-    # record_list = Record.query.filter_by(user_id=current_user.id) # 동일한 유저
     record_list = Record.query.filter(Record.user_id==current_user.id, Record.date>=t_date) # 동일한 유저
-    # food_list = Food.query.filter_by(record_id==19)
-    # print(food_list)
-
     
     record_lists = []
     record_id = []
@@ -40,17 +36,6 @@ def record():
         record_lists.append(record_foods)
 
     record_list_food = dict(zip(record_id, record_lists))
-    print(record_list_food)
-    # record_list.filter(cast(Record.date, DATE)==date.today()).all() # 같은 날짜
-    # print(record_list)
-
-    # food_list = []
-    # for record in record_list:
-    #     # print(record.id, '\n\n')
-    #     food = Food.query.filter_by(record_id=record.id)
-    #     food_list += food
-
-    # print("\n\nfood_list:", food_list)
     return render_template('user/record.html', record_list=record_list, dates=dates, date=t_date, record_list_food=record_list_food)
 
 
@@ -63,7 +48,6 @@ def day_record(date):
         p_date = t_date - timedelta(days=d)
         dates.append(p_date)
 
-    print(type(t_date))
     record_list = Record.query.filter(Record.user_id==current_user.id, Record.date>=date, Record.date<date_obj)
 
     record_lists = []
@@ -88,7 +72,6 @@ def food_record(record_id):
     food_total['calories'] = food_total['sodium'] = food_total['carbohydrate'] \
     = food_total['fat'] = food_total['cholesterol'] = food_total['protein'] = 0
     for food in food_list:
-        print("\n", food.calories)
         food_total['calories'] += food.calories
         food_total['sodium'] += food.sodium
         food_total['carbohydrate'] += food.carbohydrate
@@ -96,12 +79,9 @@ def food_record(record_id):
         food_total['cholesterol'] += food.cholesterol
         food_total['protein'] += food.protein
 
-    record = Record.query.filter(Record.id==record_id)
-    for i in record:
-        record_image = i.image
+    record = Record.query.filter(Record.id==record_id).first()
 
-    print(food_total)
-    return render_template('user/food_record.html', food_list=food_list, food_total=food_total, record_image=record_image)
+    return render_template('user/food_record.html', food_list=food_list, food_total=food_total, record_image=record.image)
 
 
 @user.route('/bmi')
