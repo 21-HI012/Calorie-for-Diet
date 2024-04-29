@@ -1,10 +1,11 @@
-from flask import request, current_app, render_template, session, Response
+from flask import request, render_template, session, Response, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from . import food
 from ultralytics import YOLO
 import boto3
 import os
 import requests
+import json
 from flask_login import current_user
 from datetime import datetime
 from ..record.models import Record
@@ -92,20 +93,37 @@ def predict():
             os.remove(output_file_path)
             os.remove(os.path.join('', filename))
 
+            with open('allowed_foods.json', 'r') as f:
+                allowed_foods_data = json.load(f)
+            allowed_foods = allowed_foods_data['foods']
+
             products = []
             for box in results[0].boxes:
                 cls = box.cls 
                 class_label = model.names[int(cls)]
-                products.append(class_label)
+                if class_label in allowed_foods:
+                    products.append(class_label)
 
             products = list(set(products))
 
             user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{output_path}'
 
+            if not products:
+                return render_template('home/food_notfound.html', user_image=user_image)
             return render_template('home/weights2.html', products=products, user_image=user_image)
 
     return render_template('home/upload.html')
 
+
+@food.route("/input_food", methods=['GET', 'POST'])
+def input_food():
+    if request.method == 'POST':
+        food_names = request.form.getlist('food_names[]')
+        if food_names:
+            for food_name in food_names:
+                products.append(food_name)
+            return render_template('home/weights2.html', products=products, user_image=user_image)
+        
 
 @food.route("/save_result", methods=['POST'])
 def save_result():
@@ -140,5 +158,7 @@ def save_result():
         db.session.commit()
 
         return Response(day_record())
-    return '저장할 데이터가 없습니다.'
+    
+    flash('저장할 데이터가 없습니다.', 'info')  # 사용자에게 메시지 전달
+    return redirect(url_for('home.main'))
             

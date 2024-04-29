@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>음식명 입력</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        var maxFields = 10; // 최대 입력 가능한 음식 수
+        var addButton = $(".add_food_button"); // 음식 추가 버튼
+        var wrapper = $(".input_fields_wrap"); // 입력 필드의 컨테이너
+
+        var x = 1; // 초기 필드 수
+        $(addButton).click(function (e) {
+          e.preventDefault();
+          if (x < maxFields) {
+            x++;
+            $(wrapper).append(
+              '<div><input type="text" name="food_names[]" placeholder="음식명"/><a href="#" class="remove_field">제거</a></div>'
+            );
+          }
+        });
+
+        $(wrapper).on("click", ".remove_field", function (e) {
+          e.preventDefault();
+          $(this).parent("div").remove();
+          x--;
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <p>인식된 음식이 없습니다.</p>
+    <h1>음식명 입력</h1>
+    <div class="cam_predict_image">
+      <img src="{{ user_image }}" alt="User Image" class="cam_predict_img" />
+    </div>
+    <form action="/input_food" method="post">
+      <div class="input_fields_wrap">
+        <button class="add_food_button">음식 추가</button>
+        <div>
+          <input type="text" name="food_names[]" placeholder="음식명" />
+        </div>
+      </div>
+      <button type="submit">제출</button>
+    </form>
+  </body>
+</html>
