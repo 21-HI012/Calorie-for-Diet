@@ -71,19 +71,22 @@ def predict():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
 
-            s3 = s3_connection()
-            s3.upload_fileobj(file, Config.S3_BUCKET_NAME, f"input/{filename}")
+            input_path = f"input/user_{current_user.id}/{filename}"
+            output_path = f"/user_{current_user.id}/output{filename}"
 
-            file_path = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/input/{filename}'
+            s3 = s3_connection()
+            s3.upload_fileobj(file, Config.S3_BUCKET_NAME, input_path)
+
+            file_path = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{input_path}'
 
             # YOLOv8로 이미지 읽기 및 예측
             model = YOLO('yolov8n.pt')
-            results = model.predict(source=file_path, save=True, project="static/images", name="output", exist_ok=True)
+            results = model.predict(source=file_path, save=True, project=f"static/images/user_{current_user.id}", name="output", exist_ok=True)
 
-            output_file_path = os.path.join('static/images/output', filename)
+            output_file_path = os.path.join('static/images', f'user_{current_user.id}', 'output', filename)
 
             # 결과 s3 업로드
-            s3.upload_file(output_file_path, Config.S3_BUCKET_NAME, f"output/{filename}")
+            s3.upload_file(output_file_path, Config.S3_BUCKET_NAME, output_path)
 
             # 로컬 파일 삭제
             os.remove(output_file_path)
@@ -97,7 +100,7 @@ def predict():
 
             products = list(set(products))
 
-            user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/output/{filename}'
+            user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{output_path}'
 
             return render_template('home/weights2.html', products=products, user_image=user_image)
 
