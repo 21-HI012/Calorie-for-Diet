@@ -1,19 +1,19 @@
 from flask import request, render_template, session, Response, flash, redirect, url_for
 from werkzeug.utils import secure_filename
-from . import food
 from ultralytics import YOLO
+from flask_login import current_user
+from datetime import datetime
 import boto3
 import os
 import requests
 import json
-from flask_login import current_user
-from datetime import datetime
+
+from . import food
 from ..record.models import Record
 from ..food.models import Food
 from ..extension import db
 from ..user.routes import record as day_record
 from ..config import Config
-
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
@@ -28,31 +28,6 @@ def s3_connection():
                       aws_secret_access_key = Config.AWS_SECRET_ACCESS_KEY)
     return s3
 
-    
-@food.route("/upload", methods=['GET', 'POST'])
-def upload():
-    return render_template('home/upload.html')
-
-
-@food.route("/result", methods=['GET', 'POST'])
-def result():
-    global products, filename
-    if request.method == 'POST':
-        food_query = []
-        nutrition_data = {}
-        for food, weight in request.form.items():
-            if weight:
-                food_query.append(f"{weight}g {food}")
-            # API 호출을 위한 쿼리 스트링 조합
-            query_string = ' and '.join(food_query)
-
-        nutrition_data = get_nutrition_data(query_string)
-    
-        session['nutrition_data'] = nutrition_data  # 세션 저장
-
-        return render_template('home/predict.html', products=products, user_image=user_image, nutrition_data=nutrition_data)
-    else:
-        return render_template('home/predict.html', products=products, user_image=user_image)
 
 def get_nutrition_data(query):
     api_url = 'https://api.calorieninjas.com/v1/nutrition?query='
@@ -64,32 +39,35 @@ def get_nutrition_data(query):
         print("Error:", response.status_code, response.text)
         return []
 
+
+# 이미지 업로드
+@food.route("/upload", methods=['GET', 'POST'])
+def upload():
+    return render_template('home/upload.html')
+
+
+# 음식 인식
 @food.route("/predict", methods=['GET', 'POST'])
 def predict():
-    global products, filename, user_image
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            session['filename'] = filename
 
             input_path = f"input/user_{current_user.id}/{filename}"
-            output_path = f"/user_{current_user.id}/output{filename}"
+            output_path = f"user_{current_user.id}/output/{filename}"
 
             s3 = s3_connection()
             s3.upload_fileobj(file, Config.S3_BUCKET_NAME, input_path)
 
             file_path = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{input_path}'
-
-            # YOLOv8로 이미지 읽기 및 예측
             model = YOLO('yolov8n.pt')
             results = model.predict(source=file_path, save=True, project=f"static/images/user_{current_user.id}", name="output", exist_ok=True)
 
             output_file_path = os.path.join('static/images', f'user_{current_user.id}', 'output', filename)
-
-            # 결과 s3 업로드
             s3.upload_file(output_file_path, Config.S3_BUCKET_NAME, output_path)
 
-            # 로컬 파일 삭제
             os.remove(output_file_path)
             os.remove(os.path.join('', filename))
 
@@ -97,44 +75,48 @@ def predict():
                 allowed_foods_data = json.load(f)
             allowed_foods = allowed_foods_data['foods']
 
-            products = []
-            for box in results[0].boxes:
-                cls = box.cls 
-                class_label = model.names[int(cls)]
-                if class_label in allowed_foods:
-                    products.append(class_label)
+            products = [model.names[int(box.cls)] for box in results[0].boxes if model.names[int(box.cls)] in allowed_foods]
+            session['products'] = list(set(products))
+            session['user_image'] = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{output_path}'
 
-            products = list(set(products))
-
-            user_image = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{output_path}'
-
-            if not products:
-                return render_template('home/food_notfound.html', user_image=user_image)
-            return render_template('home/weights2.html', products=products, user_image=user_image)
+            if not session['products']:
+                return render_template('home/food_notfound.html', user_image=session['user_image'])
+            return render_template('home/weights2.html', products=session['products'], user_image=session['user_image'])
 
     return render_template('home/upload.html')
 
 
+# 인식 결과
+@food.route("/result", methods=['GET', 'POST'])
+def result():
+    if request.method == 'POST':
+        food_query = [f"{weight}g {food}" for food, weight in request.form.items() if weight]
+        query_string = ' and '.join(food_query)
+        nutrition_data = get_nutrition_data(query_string)
+        session['nutrition_data'] = nutrition_data
+        return render_template('home/predict.html', products=session.get('products', []), user_image=session.get('user_image', ''), nutrition_data=nutrition_data)
+    return render_template('home/predict.html', products=session.get('products', []), user_image=session.get('user_image', ''))
+
+
+# 사용자 음식 입력
 @food.route("/input_food", methods=['GET', 'POST'])
 def input_food():
     if request.method == 'POST':
         food_names = request.form.getlist('food_names[]')
         if food_names:
-            for food_name in food_names:
-                products.append(food_name)
-            return render_template('home/weights2.html', products=products, user_image=user_image)
-        
+            session['products'] = session.get('products', []) + food_names
+            return render_template('home/weights2.html', products=session['products'], user_image=session['user_image'])
+    return redirect(url_for('upload'))
 
+
+# 결과 기록
 @food.route("/save_result", methods=['POST'])
 def save_result():
-    nutrition_data = session.get('nutrition_data')  # 세션에서 데이터 가져오기
-
-    new_record = Record(user_id=current_user.id, date=datetime.now(), image = user_image)
-    new_record.image = user_image
-    db.session.add(new_record)
-    db.session.commit()
-
+    nutrition_data = session.get('nutrition_data')
     if nutrition_data:
+        new_record = Record(user_id=current_user.id, date=datetime.now(), image=session['user_image'])
+        db.session.add(new_record)
+        db.session.commit()
         for data in nutrition_data:
             new_food = Food(record_id=new_record.id,
                     name = data['name'],
@@ -156,9 +138,8 @@ def save_result():
         t_record.t_cholesterol += new_food.cholesterol
         t_record.t_protein += new_food.protein
         db.session.commit()
-
+        
         return Response(day_record())
-    
-    flash('저장할 데이터가 없습니다.', 'info')  # 사용자에게 메시지 전달
+
+    flash('저장할 데이터가 없습니다.', 'info')
     return redirect(url_for('home.main'))
-            
