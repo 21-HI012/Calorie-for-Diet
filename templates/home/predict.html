@@ -10,52 +10,50 @@
     <title>영양 정보 결과</title>
   </head>
   <body>
-    <body>
-      {% include 'home/side.html' %}
-      <div class="cam_predict_name">인식 결과</div>
-      <div class="cam_predict_intro">
-        촬영한 음식들을 인식하고 영양정보를 보여줍니다.
-      </div>
-      <div class="cam_predict_image">
-        <img
-          src="{{ user_image }}"
-          alt="User Image"
-          class="cam_predict_img"
-        />
-      </div>
-  
+    {% include 'home/side.html' %}
+    <div class="cam_predict_name">인식 결과</div>
+    <div class="cam_predict_intro">
+      촬영한 음식들을 인식하고 영양정보를 보여줍니다.
+    </div>
+    <div class="cam_predict_image">
+      <img src="{{ user_image }}" alt="User Image" class="cam_predict_img" />
+    </div>
+
     <h1>영양 정보</h1>
+    {% if nutrition_data %}
     <form method="post" action="/save_result">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>식품명</th>
-          <th>무게 (g)</th>
-          <th>열량 (kcal)</th>
-          <th>나트륨 (mg)</th>
-          <th>탄수화물 (g)</th>
-          <th>지방 (g)</th>
-          <th>콜레스테롤 (mg)</th>
-          <th>단백질 (g)</th>
-          
-        </tr>
-      </thead>
-      <tbody>
-        {% for data in nutrition_data %}
-        <tr>
-          <td>{{ data['name'] }}</td>
-          <td>{{ data['serving_size_g'] }}</td>
-          <td>{{ data['calories'] }}</td>
-          <td>{{ data['sodium_mg'] }}</td>
-          <td>{{ data['carbohydrates_total_g'] }}</td>
-          <td>{{ data['fat_total_g'] }}</td>
-          <td>{{ data['cholesterol_mg'] }}</td>
-          <td>{{ data['protein_g'] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <button type="submit">저장하기</button>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>식품명</th>
+            <th>무게 (g)</th>
+            <th>열량 (kcal)</th>
+            <th>나트륨 (mg)</th>
+            <th>탄수화물 (g)</th>
+            <th>지방 (g)</th>
+            <th>콜레스테롤 (mg)</th>
+            <th>단백질 (g)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in nutrition_data %}
+          <tr>
+            <td>{{ data['name'] }}</td>
+            <td>{{ data['serving_size_g'] }}</td>
+            <td>{{ data['calories'] }}</td>
+            <td>{{ data['sodium_mg'] }}</td>
+            <td>{{ data['carbohydrates_total_g'] }}</td>
+            <td>{{ data['fat_total_g'] }}</td>
+            <td>{{ data['cholesterol_mg'] }}</td>
+            <td>{{ data['protein_g'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit">저장하기</button>
     </form>
+    {% else %}
+    <div class="alert">인식된 음식이 없습니다.</div>
+    {% endif %}
   </body>
 </html>
