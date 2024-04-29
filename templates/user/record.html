@@ -15,7 +15,6 @@
         }
 
         .time-record {
-            width: 100%;
             background-color: #EAEAEA;
             border-radius: 10px;
             margin-bottom: 10px;
@@ -37,7 +36,7 @@
 </head>
 
 <body>
-    {% include 'home/side.html' %}
+    <!-- {% include 'home/side.html' %} -->
     <div class="cam_predict_name">식단 기록</div>
     <div class="cam_predict_intro">인식했던 식단의 기록을 봅니다.</div>
     <div class="record_date">{{date}}</div>
@@ -50,26 +49,48 @@
             {% endfor %}
         </select>
     </div>
+
     <div style="text-align: center; padding: 20px;">
         {% for record in record_list[::-1] %}
-        <div>
-        <a href="{{url_for('user.food_record', record_id=record.id)}}" style="color:black; font-size: 18px;">
-            <div class="time-record">
-            <div style="font-size: 15px;">{{record.date}}</div>
-            {% for id, name in record_list_food.items() %}
-            {% if id==record.id %}
-                <div style="font-size: 20px; font-weight: bold;">
-                {% for food_name in name %}
-                {{food_name}}
-                <br>
-                {% endfor %}
-                </div>
-            {% endif %}
-            {% endfor %}
-        </div></a>
-
+            <div>
+                <a href="{{ url_for('user.food_record', record_id=record.id) }}" style="color:black; font-size: 18px;">
+                    <div class="time-record">
+                        <div style="font-size: 15px;">{{ record.date }}</div>
+                        {% for id, name in record_list_food.items() %}
+                            {% if id == record.id %}
+                                <div style="font-size: 20px; font-weight: bold;">
+                                    {% for food_name in name %}
+                                        {{ food_name }}<br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </a>
+                <button onclick="deleteRecord('{{ record.id }}')" style="margin-left: 20px;">삭제</button>
+            </div>
         {% endfor %}
     </div>
+
+    <script>
+        function deleteRecord(recordId) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                fetch(`/delete_record?record_id=${recordId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('기록이 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('삭제 실패: ' + data.message);
+                    }
+                })
+                .catch(error => alert('오류가 발생했습니다: ' + error));
+            }
+        }
+    </script>
 </body>
 
 </html>
