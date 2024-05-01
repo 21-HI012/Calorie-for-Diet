@@ -1,0 +1,86 @@
+a {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+p {
+  font-size: 15px;
+  letter-spacing: 1px;
+  line-height: 20px;
+}
+
+.video {
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+	object-fit: cover;
+	background-size: cover;
+	filter: brightness(50%);
+  }
+
+.title {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: #ffffff;
+  z-index: 1;
+  text-align: center;
+}
+
+.subtitle {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  z-index: 1;
+  text-align: center;
+  width: 80%;
+}
+
+.is-fullheight {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.sign {
+  position: absolute;
+  width: 100%;
+  bottom: 10%;
+  left: 0;
+  z-index: 1;
+  text-align: center;
+}
+
+.signup, .signin {
+  display: inline-block;
+  width: 30%;
+  height: 50px;
+  line-height: 50px;
+  background-color: #6BC57D;
+  color: #ffffff;
+  margin: 10px 5%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.signin {
+  background-color: #CACACA;
+}
+
+/* 모바일에서의 크기 조정 */
+@media (max-width: 768px) {
+  .title, .subtitle {
+    font-size: 20px;
+    width: 90%;
+  }
+
+  .signup, .signin {
+    width: 45%;
+  }
+}
