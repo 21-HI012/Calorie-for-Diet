@@ -42,6 +42,11 @@ def signup_post():
     name = request.form.get('name')
     password = request.form.get('password')
     gender = request.form.get('gender')
+
+    if not name or not email or not password:
+        flash('이름, 이메일, 비밀번호는 필수 입력 항목입니다.', 'error')
+        return redirect(url_for('auth.signup'))
+
     
     user = User.query.filter_by(email=email).first()
 
@@ -58,5 +63,7 @@ def signup_post():
 
     db.session.add(new_user)
     db.session.commit()
+
+    flash('회원가입 완료! 로그인 해주세요.', 'success')
 
     return redirect(url_for('auth.login'))

@@ -12,5 +12,4 @@ class User(UserMixin, db.Model):
     height = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.Boolean, nullable=True)
     age = db.Column(db.Integer, nullable=True)
-
     record = relationship("Record", cascade="all, delete", backref="user")

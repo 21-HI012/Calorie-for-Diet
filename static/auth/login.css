@@ -1,0 +1,47 @@
+body {
+  background-color: #6bc57d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+h1,
+h2 {
+  text-align: center;
+}
+
+.form-control {
+  background-color: #cacaca;
+  border: none;
+  color: white;
+}
+
+.form-control::placeholder {
+  color: white;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #4a945e;
+  border: none;
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    width: 90%;
+    padding: 1rem;
+  }
+}
