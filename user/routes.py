@@ -81,7 +81,7 @@ def food_record(record_id):
 
     record = Record.query.filter(Record.id==record_id).first()
 
-    return render_template('user/food_record.html', food_list=food_list, food_total=food_total, record_image=record.image)
+    return render_template('record/food_record.html', food_list=food_list, food_total=food_total, record_image=record.image)
 
 
 @user.route('/bmi')
