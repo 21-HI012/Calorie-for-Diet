@@ -22,6 +22,7 @@
           action="/predict"
           method="post"
           enctype="multipart/form-data"
+          onsubmit="return validateForm();"
         >
           <label for="input-image" class="file-input-label">업로드</label>
           <input
@@ -43,6 +44,7 @@
       </section>
     </div>
 
+    <script src="static/food/upload-validation.js"></script>
     <script src="static/food/upload.js"></script>
   </body>
 </html>

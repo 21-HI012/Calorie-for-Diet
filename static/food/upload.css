@@ -17,8 +17,7 @@ body {
   padding: 30px; /* More padding for better spacing */
   border-radius: 10px; /* Rounded corners for modern look */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  max-width: 400px; /* Maximum width for the container */
-  width: 100%; /* Responsive width */
+  width: 90%; /* Responsive width */
 }
 
 /* Header styles for titles and subtitles */
