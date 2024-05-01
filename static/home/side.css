@@ -4,7 +4,8 @@
     font-size: 30px;
     font-weight: bold;
 }
-button {
+
+.side_button {
     position:fixed;
     right: 5%;
     bottom: 3%;
@@ -14,8 +15,6 @@ button {
     border-radius: 50%;
     border: none;
     background: #6bc57d;
-    /* border: 3px solid #fff; */
-    /* box-shadow: 0px 0px 5px 5px #fff; */
     box-shadow: 0px 0px 20px #fff;
     font-size: 50px;
     color: white;
@@ -27,11 +26,20 @@ button {
     bottom: 2%;
     display:none;
     width: 50%;
-    height: 55%;
+    height: auto;
     background-color: white;
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.menu_title {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    color: #6bc57d;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .menu_content {
@@ -42,18 +50,16 @@ button {
     margin: 10px;
 }
 
-
 .side_button::after {
     height: 0;
     left: 50%;
     top: 50%;
     width: 0;
 }
-  
+
 .side_button:hover:after {
     height: 100%;
     left: 0;
     top: 0;
     width: 100%;
 }
-  

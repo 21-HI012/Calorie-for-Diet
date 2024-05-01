@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,12 +13,13 @@
     <link rel="stylesheet" type="text/css" href="../../static/home/side.css"/>
     <title>사이드바</title>
 </head>
+
 <body>
-    <div class="header">calorie for diet</div>
+    <div class="header">Calorie for Diet</div>
     <div class="dropdown">
         <button class="side_button">+</button>
         <div id="drop_content" class="drop_content">
-            <p style="font-size: 30px; font-weight: bold; text-align: center; margin-top: 0; margin-bottom: 20px; color: #6bc57d">MENU</p>
+            <p class="menu_title">MENU</p>
             <div class="menu_content"><a href="{{ url_for('home.main') }}" 
                     style="text-decoration: none; color: white;">
                     <i class="fas fa-house-user fa-2x"></i> 메인페이지</a></div>
@@ -38,14 +40,14 @@
             var target = $(".drop_content");
  
             // 버튼을 클릭하면 사이드바 열림
-            $(document).on("click", ".side_button", function (e){
+            $(document).on("click", ".side_button", function (e) {
                 target.show();
                 target.addClass('emphasized');
             });
  
             // 사이드바 외부를 클릭하면 사이드바 닫힘
-            $(document).mouseup(function (e){
-                if(target.has(e.target).length==0) {
+            $(document).mouseup(function (e) {
+                if(target.has(e.target).length == 0) {
                     target.hide();
                     target.removeClass('emphasized');
                 } 
@@ -53,4 +55,5 @@
         });
     </script>
 </body>
+
 </html>
