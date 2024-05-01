@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="../../static/record/main.css"/>
+  <title>메인페이지</title>
+</head>
+
+<body onload="date()">
+  {% include 'home/side.html' %}
+
+  <div class="main_intro">안녕하세요. {{current_user.name}}님!
+      <br>오늘의 섭취 영양정보 입니다.
+  </div>
+
+  <div id="main_date" class="main_date"></div>
+
+  <div>
+    {% for nutrition, num in t_nutrition.items() %}
+    <p>{{nutrition}}: {{num}}</p>
+    <div class="graph stack1">
+      {% set percentage = (num / {'calories': 2500, 'sodium': 2000, 'carbohydrate': 280, 'fat': 50, 'cholesterol': 260, 'protein': 72}[nutrition] * 100) | round %}
+      {% set percentage = 100 if percentage > 100 else percentage %}
+      <span class="{{nutrition}}" style="width: {{ percentage }}%;">
+        {{num}} / {{ {'calories': '2,500kcal', 'sodium': '2,000mg', 'carbohydrate': '280g', 'fat': '50g', 'cholesterol': '260mg', 'protein': '72g'}[nutrition] }}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <script>
+      function date() {
+          var today = new Date();
+          var week = ["일", "월", "화", "수", "목", "금", "토"];
+          document.getElementById("main_date").innerHTML=today.getFullYear() + "." +
+              eval(today.getMonth()+1) + "." + today.getDate() + " " + "("+week[today.getDay()] + ")";
+      }
+      
+  </script>
+</body>
+
+</html>
