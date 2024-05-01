@@ -43,7 +43,7 @@ def get_nutrition_data(query):
 # 이미지 업로드
 @food.route("/upload", methods=['GET', 'POST'])
 def upload():
-    return render_template('home/upload.html')
+    return render_template('food/upload.html')
 
 
 # 음식 인식
@@ -80,10 +80,10 @@ def predict():
             session['user_image'] = f'https://{Config.S3_BUCKET_NAME}.s3.{Config.AWS_BUCKET_REGION}.amazonaws.com/{output_path}'
 
             if not session['products']:
-                return render_template('home/food_notfound.html', user_image=session['user_image'])
-            return render_template('home/weights2.html', products=session['products'], user_image=session['user_image'])
+                return render_template('food/food_notfound.html', user_image=session['user_image'])
+            return render_template('food/weights2.html', products=session['products'], user_image=session['user_image'])
 
-    return render_template('home/upload.html')
+    return render_template('food/upload.html')
 
 
 # 인식 결과
@@ -94,8 +94,8 @@ def result():
         query_string = ' and '.join(food_query)
         nutrition_data = get_nutrition_data(query_string)
         session['nutrition_data'] = nutrition_data
-        return render_template('home/predict.html', products=session.get('products', []), user_image=session.get('user_image', ''), nutrition_data=nutrition_data)
-    return render_template('home/predict.html', products=session.get('products', []), user_image=session.get('user_image', ''))
+        return render_template('food/predict.html', products=session.get('products', []), user_image=session.get('user_image', ''), nutrition_data=nutrition_data)
+    return render_template('food/predict.html', products=session.get('products', []), user_image=session.get('user_image', ''))
 
 
 # 사용자 음식 입력
@@ -105,7 +105,7 @@ def input_food():
         food_names = request.form.getlist('food_names[]')
         if food_names:
             session['products'] = session.get('products', []) + food_names
-            return render_template('home/weights2.html', products=session['products'], user_image=session['user_image'])
+            return render_template('food/weights2.html', products=session['products'], user_image=session['user_image'])
     return redirect(url_for('upload'))
 
 
@@ -142,4 +142,4 @@ def save_result():
         return Response(day_record())
 
     flash('저장할 데이터가 없습니다.', 'info')
-    return redirect(url_for('home.main'))
+    return redirect(url_for('food.main'))

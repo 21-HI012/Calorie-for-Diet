@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../../static/home/cam_predict.css"
+    />
+    <title>무게 입력</title>
+  </head>
+
+  <body>
+    {% include 'home/side.html' %}
+    <form
+      action="/result"
+      method="post"
+      style="text-align: center; margin-top: 20px"
+    >
+      <div class="cam_predict_name">무게 입력</div>
+      <div class="cam_predict_intro">
+        정확한 계산을 위해 인식한 음식들의 무게를 입력합니다.
+      </div>
+      <div class="cam_predict_image">
+        <img src="{{ user_image }}" alt="User Image" class="cam_predict_img" />
+      </div>
+      <div
+        class="weight_title"
+        style="font-size: 25px; font-weight: bold; text-align: center"
+      >
+        인식한 음식
+      </div>
+      <hr />
+      <div>
+        {% for food in products %}
+        <div class="food_name" style="font-size: 25px; font-weight: bold">
+          {{food}}:
+          <input
+            type="number"
+            name="{{food}}"
+            value="100"
+            style="
+              font-size: 20px;
+              width: 20%;
+              text-align: center;
+              border-radius: 5px;
+            "
+          />g
+        </div>
+        <br />
+        {% endfor %}
+      </div>
+      <div class="save_btn">
+        <input type="submit" class="save_input" value="결과보기" />
+      </div>
+    </form>
+  </body>
+</html>

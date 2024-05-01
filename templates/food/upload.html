@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="static/food/upload.css" />
+    <title>Image Upload</title>
+  </head>
+  <body>
+    <!-- Include Sidebar or Navigation -->
+    <!-- {% include 'home/side.html' %} -->
+
+    <div class="container">
+      <header>
+        <h1 class="upload-title">이미지 업로드</h1>
+        <p class="upload-subtitle">기존 이미지로 음식들을 인식합니다.</p>
+      </header>
+      <section>
+        <form
+          class="upload-form"
+          action="/predict"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <label for="input-image" class="file-input-label">업로드</label>
+          <input
+            type="file"
+            id="input-image"
+            name="file"
+            hidden
+            onchange="readImage(this);"
+          />
+          <div class="image-preview">
+            <img
+              id="preview-image"
+              src="static/food/upload_img.png"
+              alt="Image Preview"
+            />
+          </div>
+          <button type="submit" class="submit-btn">인식하기</button>
+        </form>
+      </section>
+    </div>
+
+    <script src="static/food/upload.js"></script>
+  </body>
+</html>

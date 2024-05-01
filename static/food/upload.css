@@ -1,0 +1,90 @@
+/* Base styling for the body to set font and background */
+body {
+  font-family: "Arial", sans-serif; /* Consistent font throughout the page */
+  background-color: #f4f4f9; /* Light grey background for a subtle look */
+  margin: 0;
+  padding: 20px; /* Padding to ensure content does not stick to edges */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full height to center container vertically */
+}
+
+/* Styling for the main container where content is displayed */
+.container {
+  text-align: center;
+  background-color: white;
+  padding: 30px; /* More padding for better spacing */
+  border-radius: 10px; /* Rounded corners for modern look */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  max-width: 400px; /* Maximum width for the container */
+  width: 100%; /* Responsive width */
+}
+
+/* Header styles for titles and subtitles */
+.upload-title {
+  font-size: 24px;
+  color: #333; /* Darker color for better readability */
+}
+
+.upload-subtitle {
+  font-size: 16px;
+  color: #666; /* Subtle color for less emphasis */
+  margin-bottom: 30px; /* Increased bottom margin for spacing */
+}
+
+/* Label styling to mimic a button */
+.file-input-label {
+  display: inline-block;
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white;
+  padding: 12px 24px; /* Generous padding for clickable area */
+  margin-bottom: 30px; /* Space before next element */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for label */
+.file-input-label:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Image preview styles */
+.image-preview img {
+  max-width: 100%; /* Full width but maintain aspect ratio */
+  height: auto; /* Auto height for maintaining aspect ratio */
+  border: 1px solid #ddd; /* Subtle border around the image */
+  margin-bottom: 30px; /* Spacing before the next element */
+}
+
+/* Submit button styling */
+.submit-btn {
+  background-color: #28a745; /* Success color, indicative of action */
+  color: white;
+  border: none;
+  padding: 12px 24px; /* Consistent padding with label */
+  font-size: 16px; /* Legible font size */
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%; /* Full width button for emphasis */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for submit button */
+.submit-btn:hover {
+  background-color: #218838; /* Darker shade on hover */
+}
+
+/* Responsive adjustments with a media query */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px; /* Slightly less padding on smaller screens */
+    width: 90%; /* More responsive width adjustment */
+  }
+
+  .upload-title,
+  .upload-subtitle {
+    padding: 0 10px; /* Ensures text does not touch the edges */
+  }
+}
