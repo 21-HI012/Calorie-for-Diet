@@ -79,3 +79,36 @@ html {
 .remove_field:hover {
   color: #e53e30;
 }
+
+@media (max-width: 768px) {
+  .input-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .food-input {
+    width: 100%; /* Ensures the input takes the full width on smaller screens */
+    margin-bottom: 5px;
+  }
+
+  .remove_field {
+    align-self: center; /* Center the remove button when stacked */
+    margin-left: 0;
+    margin-top: 5px;
+  }
+
+  .add_food_button,
+  .submit_button {
+    width: 100%; /* Button takes full width to handle touch better */
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 15px; /* Less padding to allow more space for content */
+  }
+
+  .cam_predict_image img {
+    max-height: 200px; /* Smaller image for smaller screens */
+  }
+}
