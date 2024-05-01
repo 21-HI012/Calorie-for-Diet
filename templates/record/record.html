@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/record/record.css" />
+    <title>개인별 식단 기록 페이지</title>
+</head>
+
+<body>
+    {% include 'home/side.html' %}
+
+    <div class="title">식단 기록</div>
+    <div class="description">인식했던 식단의 기록을 봅니다.</div>
+    <div class="record_date">{{date}}</div>
+
+    <div class="select_date">
+        <select id="browsers" name="browsers" onchange="updateDate(this.value);">
+            <option value="">날짜 선택</option>
+            {% for date in dates %}
+            <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>
+                {{ date }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="record-container">
+        {% set records = record_list.all() %}
+        {% if records|length > 0 %}
+            {% for record in records %}
+                <div class="time-record">
+                    <a href="{{ url_for('user.food_record', record_id=record.id) }}" class="record-letter">
+                        <div>{{ record.date }}</div>
+                        {% for id, name in record_list_food.items() %}
+                            {% if id == record.id %}
+                                <div class="food-name">
+                                    {% for food_name in name %}
+                                        {{ food_name }}<br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </a>
+                    <button onclick="deleteRecord('{{ record.id }}')" class="delete-button">삭제</button>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>해당 날짜에 기록이 없습니다.</div>
+        {% endif %}
+    </div>
+    
+
+    <script>
+        function deleteRecord(recordId) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                fetch(`/delete_record?record_id=${recordId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('기록이 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('삭제 실패: ' + data.message);
+                    }
+                })
+                .catch(error => alert('오류가 발생했습니다: ' + error));
+            }
+        }
+
+        function updateDate(selectDate) {
+            document.querySelector('.record_date').textContent = selectDate;
+            if (selectDate) {
+                window.location.href = "{{ url_for('user.day_record', date='0000-00-00') }}".replace('0000-00-00', selectDate);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -36,7 +36,7 @@ def record():
         record_lists.append(record_foods)
 
     record_list_food = dict(zip(record_id, record_lists))
-    return render_template('user/record.html', record_list=record_list, dates=dates, date=t_date, record_list_food=record_list_food)
+    return render_template('record/record.html', record_list=record_list, dates=dates, date=t_date, record_list_food=record_list_food)
 
 
 @user.route('/day_record/<date>')
@@ -61,7 +61,7 @@ def day_record(date):
         record_lists.append(record_foods)
 
     record_list_food = dict(zip(record_id, record_lists))
-    return render_template('user/record.html', record_list=record_list, dates=dates, date=date, record_list_food=record_list_food)
+    return render_template('record/record.html', record_list=record_list, dates=dates, date=date, record_list_food=record_list_food)
 
 
 @user.route('/record/<int:record_id>')
