@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/barcode/barcode.css"/>
+    <title>바코드 인식</title>
+</head>
+
+<body>
+    {% include 'home/side.html' %}
+
+    <div id="videoFeed">
+        <img src="{{ url_for('barcode.video_feed') }}" />
+    </div>
+
+    <div id="noMatchMessage" style="display:none;">
+        <h3>일치하는 정보가 없습니다.</h3>
+    </div>
+
+    <div id="manualInput" style="display:none;">
+        <h2>식품 정보 직접 입력</h2>
+        <form id="manualForm">
+            <table>
+                <tr>
+                    <td>식품명</td>
+                    <td><input type="text" id="manualName" required></td>
+                </tr>
+                <tr>
+                    <td>내용량(g)</td>
+                    <td><input type="number" id="manualWeight" required></td>
+                </tr>
+                <tr>
+                    <td>열량(kcal)</td>
+                    <td><input type="number" id="manualCalories" required></td>
+                </tr>
+                <tr>
+                    <td>나트륨(mg)</td>
+                    <td><input type="number" id="manualSodium" required></td>
+                </tr>
+                <tr>
+                    <td>탄수화물(g)</td>
+                    <td><input type="number" id="manualCarbohydrate" required></td>
+                </tr>
+                <tr>
+                    <td>지방(g)</td>
+                    <td><input type="number" id="manualFat" required></td>
+                </tr>
+                <tr>
+                    <td>콜레스테롤(mg)</td>
+                    <td><input type="number" id="manualCholesterol" required></td>
+                </tr>
+                <tr>
+                    <td>단백질(g)</td>
+                    <td><input type="number" id="manualProtein" required></td>
+                </tr>
+            </table>
+            <button type="submit" class="form-button">정보 저장</button>
+        </form>
+    </div>
+
+    <div class="button-container">
+        <button id="manualEntryButton">직접 입력</button>
+        <button id="rescanButton" style="margin-top: 10px; display: none;">재인식하기</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            var socket = io.connect('http://127.0.0.1:5000');
+            
+            socket.on('barcode', function(data) {
+                $('#videoFeed').hide();
+                $('#manualEntryButton').hide();
+                showFood(data.food_info);
+            });
+
+            socket.on('no_match_data', function() {
+                $('#videoFeed').hide();
+                $('#noMatchMessage').show();
+                $('#manualInput').hide();
+                $('#manualEntryButton').show();
+                $('#rescanButton').show();
+            });
+        });
+
+        $('#manualEntryButton').click(function() {
+            $('#videoFeed').hide();
+            $('#manualInput').show();
+            $('#manualEntryButton').hide();
+            $('#rescanButton').hide();
+        });
+
+        $('#rescanButton').click(function() {
+            $('#videoFeed').attr('src', "{{ url_for('barcode.video_feed') }}");
+            $('#videoFeed').show();
+            $('#manualInput').hide();
+            $('#noMatchMessage').hide();
+            $('#result').empty();
+        });
+
+        $('#manualForm').submit(function(event) {
+            event.preventDefault(); // 기본 제출 동작 방지
+            let info = {
+                name: $('#manualName').val(),
+                weight: $('#manualWeight').val(),
+                calories: $('#manualCalories').val(),
+                sodium: $('#manualSodium').val(),
+                carbohydrate: $('#manualCarbohydrate').val(),
+                fat: $('#manualFat').val(),
+                cholesterol: $('#manualCholesterol').val(),
+                protein: $('#manualProtein').val()
+            };
+            saveFoodInfo(info);
+        });
+
+        function showFood(info) {
+            if (info) {
+                let record_html = `
+                    <div class="food-output"">
+                        <h2>바코드 인식 결과: 영양정보를 표시합니다.</h2>
+                        <div class="food-info">
+                            <table>
+                                <tr>
+                                    <td style="font-weight:bold;">식품명/내용량</td>
+                                    <td style="font-weight:bold;">${info.name}/${info.weight}g</td>
+                                </tr>
+                                <tr>
+                                    <td>열량(kcal)</td>
+                                    <td>${info.calories}</td>
+                                </tr>
+                                <tr>
+                                    <td>나트륨(mg)</td>
+                                    <td>${info.sodium}</td>
+                                </tr>
+                                <tr>
+                                    <td>탄수화물(g)</td>
+                                    <td>${info.carbohydrate}</td>
+                                </tr>
+                                <tr>
+                                    <td>지방(g)</td>
+                                    <td>${info.fat}</td>
+                                </tr>
+                                <tr>
+                                    <td>콜레스테롤(mg)</td>
+                                    <td>${info.cholesterol}</td>
+                                </tr>
+                                <tr>
+                                    <td>단백질(g)</td>
+                                    <td>${info.protein}</td>
+                                </tr>
+                            </table>
+                            <button id="saveButton" type="submit" class="save-button">정보 저장</button>
+                        </div>
+                    </div>
+                `;
+                $('#result').html(record_html);
+                updateSaveButton(info);
+            } else {
+                $('#result').html('<h2>해당 식품을 찾을 수 없습니다.</h2>');
+            }
+        }
+
+        function updateSaveButton(info) {
+            $('#saveButton').on('click', function() {
+                saveFoodInfo(info);
+            });
+        }
+
+        function saveFoodInfo(info) {
+            $.ajax({
+                url: `/barcode_record`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(info),
+                success: function(response) {
+                    window.location.href = '/record';
+                },
+                error: function(response) {
+                    alert('저장 실패: ' + response.responseJSON);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

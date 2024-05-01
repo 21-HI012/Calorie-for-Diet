@@ -1,0 +1,68 @@
+#videoFeed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#noMatchMessage {
+    text-align: center;
+}
+
+#manualInput, .food-output {
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    display: block;
+    overflow: hidden;
+}
+
+#manualForm, .food-info {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 10px;
+}
+
+input[type="number"], input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-button, .save-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.button-container {
+    text-align: center;
+    padding: 20px;
+}
+
+#manualEntryButton, #rescanButton {
+    display: inline-block;
+    width: 30%;
+    height: 50px;
+    background-color: #6BC57D;
+    color: #ffffff;
+    margin: 10px 5%;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
