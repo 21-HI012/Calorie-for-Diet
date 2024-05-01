@@ -77,4 +77,4 @@ def get_and_save_food_info(my_code):
 
 @barcode.route('/barcode')
 def barcode():
-    return render_template('home/barcode.html')
+    return render_template('barcode/barcode.html')

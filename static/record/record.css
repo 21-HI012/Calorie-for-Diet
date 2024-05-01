@@ -1,0 +1,72 @@
+.title {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px;
+}
+
+.description {
+    font-size: 20px;
+    text-align: center;
+    margin: 10px;
+}
+
+.record-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.record_date {
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.select_date {
+    text-align: center;
+}
+
+#browsers {
+    font-size: 15px;
+    width: 30%;
+    height: 30px;
+}
+
+a {
+    text-decoration-line: none;
+}
+
+.time-record {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #EAEAEA;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.time-record div, .time-record a {
+    flex: 1;
+}
+
+.record-letter {
+    color:black;
+    font-size: 18px;
+}
+
+.food-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+button.delete-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #ff9090;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
