@@ -28,6 +28,6 @@ def main():
     per_nutrition = {}
     per_nutrition['calories'] = round(t_nutrition['calories']/2100 * 100, 1)
 
-    return render_template('home/main.html', t_nutrition=t_nutrition, t_date=t_date, 
+    return render_template('record/main.html', t_nutrition=t_nutrition, t_date=t_date, 
                             per_nutrition=per_nutrition, sodium=t_nutrition['sodium'], carbohydrate=t_nutrition['carbohydrate'],
                             fat=t_nutrition['fat'], cholesterol=t_nutrition['cholesterol'], protein=t_nutrition['protein'])

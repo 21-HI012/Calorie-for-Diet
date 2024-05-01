@@ -1,0 +1,64 @@
+.main_intro {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px;
+}
+
+.main_date {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px;
+}
+
+.graph {
+    height: 25px;
+    margin: 0 0 20px;
+    background: rgba(204, 204, 204, 0.3);
+    border-radius: 40px;
+}
+
+.graph span {
+    display: block;
+    padding: 0 10px;
+    height: 25px;
+    line-height: 25px;
+    text-align: right;
+    border-radius: 40px;
+    box-sizing: border-box;
+    color: #fff;
+}
+
+.calories {
+    background-color: #ffb1bb;
+}
+
+.sodium {
+    background-color: #ffbe9f;
+}
+
+.carbohydrate {
+    background-color: #f3dd6d;
+}
+
+.fat {
+    background-color: #bae8d9;
+}
+
+.cholesterol {
+    background-color: #c7dbf4;
+}
+
+.protein {
+    background-color: #d5c9dd;
+}
+
+.graph.stack1 span {
+    animation: stack1 2s 1;
+}
+
+@keyframes stack1 {
+    0% {width: 0; color: rgba(255, 255, 255, 0);}
+    40% {color: rgba(255, 255, 255, 0);}
+}
