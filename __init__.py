@@ -25,7 +25,7 @@ def create_app():
     # app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{os.getenv('MYSQL_ROOT_PASSWORD')}@db:3306/{os.getenv('MYSQL_DATABASE')}"
     # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    app.config.from_object(ProductionConfig)
+    app.config.from_object(DevelopmentConfig)
 
     db.init_app(app)
     Migrate(app, db)

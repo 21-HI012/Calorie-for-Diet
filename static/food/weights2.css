@@ -1,0 +1,96 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 20px; /* Ensure there's some padding around the body content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.weight-form {
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: white;
+  text-align: center;
+}
+
+.cam_predict_name,
+.weight_title {
+  font-size: 1.5em;
+  color: #333;
+}
+
+.cam_predict_intro {
+  font-size: 1em;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.cam_predict_image {
+  margin-bottom: 20px;
+}
+
+.cam_predict_img {
+  width: 100%;
+  height: auto;
+  max-height: 300px; /* Limit the image height while maintaining aspect ratio */
+}
+
+.food_name {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.food_input {
+  font-size: 1em;
+  width: 50%;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.save_btn {
+  margin-top: 20px;
+}
+
+.save_input {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save_input:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .weight-form {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .food_input {
+    width: 70%; /* Larger input fields for easier touch access */
+  }
+}
+
+@media (max-width: 480px) {
+  .food_name {
+    font-size: 1em; /* Smaller font size for smaller screens */
+  }
+
+  .save_input {
+    width: 100%;
+  }
+}
