@@ -43,14 +43,14 @@ def barcode_record():
 
 @record.route('/delete_record', methods=['POST'])
 def delete_record():
-    record_id = request.args.get('record_id')
+    data = request.get_json()
+    record_id = data.get('record_id')
     if not record_id:
         return jsonify({'success': False, 'message': 'No record ID provided'})
 
     try:
         record = Record.query.get(record_id)
         if record:
-            Food.query.filter_by(record_id=record_id).delete()
             db.session.delete(record)
             db.session.commit()
             return jsonify({'success': True})
