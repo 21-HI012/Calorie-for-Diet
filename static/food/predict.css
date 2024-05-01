@@ -1,0 +1,100 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Updated font */
+  background-color: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.content {
+  width: 100%;
+  max-width: 960px; /* Slightly wider for better table display */
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Deeper shadow for more depth */
+  margin: 10px;
+  text-align: center;
+}
+
+.cam_predict_name,
+h1 {
+  margin: 20px 0;
+  color: #333; /* More defined text color */
+  font-weight: bold;
+}
+
+.cam_predict_intro {
+  margin-bottom: 20px;
+  color: #555; /* Darker for better readability */
+  font-style: italic;
+}
+
+.cam_predict_image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px; /* Rounded corners for images */
+}
+
+.nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* Added space before the table */
+}
+
+.nutrition-table th,
+.nutrition-table td {
+  border: 1px solid #ddd; /* Softer border color */
+  padding: 10px; /* More padding for a better look */
+  text-align: left;
+}
+
+.nutrition-table th {
+  background-color: #007bff; /* Theme color for headers */
+  color: white;
+}
+
+.nutrition-table tbody tr:nth-child(odd) {
+  background-color: #f8f9fa; /* Zebra striping for rows */
+}
+
+.save-button {
+  background-color: #28a745; /* Greener, more positive action color */
+  color: white;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.save-button:hover {
+  background-color: #218838;
+  transform: scale(1.05); /* Subtle grow effect on hover */
+}
+
+@media (max-width: 768px) {
+  .nutrition-table,
+  .nutrition-table th,
+  .nutrition-table td {
+    font-size: 14px; /* Larger font size for readability on smaller devices */
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 10px;
+    border-radius: 5px; /* Smaller radius on very small screens */
+  }
+
+  .nutrition-table,
+  .nutrition-table th,
+  .nutrition-table td {
+    font-size: 12px; /* Smaller font size for very small screens */
+  }
+}
