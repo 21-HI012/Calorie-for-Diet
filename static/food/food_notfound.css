@@ -1,0 +1,81 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: white;
+}
+
+.cam_predict_image img {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+}
+
+.food_form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input_fields_wrap {
+  margin-top: 20px;
+}
+
+.input-block {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.food-input {
+  flex-grow: 1;
+  padding: 8px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+.add_food_button,
+.submit_button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add_food_button:hover,
+.submit_button:hover {
+  background-color: #0056b3;
+}
+
+.remove_field {
+  display: inline-block;
+  margin-left: 10px;
+  color: #ff6347;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0 10px;
+  transition: color 0.3s;
+}
+
+.remove_field:hover {
+  color: #e53e30;
+}
