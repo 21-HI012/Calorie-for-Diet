@@ -84,31 +84,7 @@ body {
 
 @media (max-width: 768px) {
   .content {
-    width: 95%; /* Allows for better side padding on smaller screens */
-    margin: 10px; /* Less margin to utilize space */
-  }
-
-  .nutrition-card,
-  .card-header {
-    padding: 8px; /* Slightly less padding for space efficiency */
-  }
-
-  .card-body div {
-    font-size: 14px; /* Larger font for readability on small devices */
-  }
-}
-
-@media (max-width: 480px) {
-  .nutrition-card {
-    padding: 5px; /* Reduced padding for very small devices */
-  }
-
-  .card-body div {
-    font-size: 12px; /* Further reduced font size for very small screens */
-  }
-
-  .save-button {
-    width: 100%; /* Full width button for easy access */
-    padding: 10px; /* Optimal padding for touch interaction */
+    padding: 20px; /* Slightly less padding on smaller screens */
+    width: 90%; /* More responsive width adjustment */
   }
 }
