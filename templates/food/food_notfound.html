@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>음식명 입력</title>
@@ -8,27 +8,41 @@
     <script src="static/food/food_notfound.js" defer></script>
   </head>
   <body>
-    <div class="content">
-      <h1>음식명 입력</h1>
-      <div class="cam_predict_image">
-        <img src="{{ user_image }}" alt="User Image" class="cam_predict_img" />
-      </div>
-      <p>인식된 음식이 없습니다.</p>
-      <form action="/input_food" method="post" class="food_form">
-        <button class="add_food_button">음식 추가</button>
-        <div class="input_fields_wrap">
-          <div class="input-block">
-            <input
-              type="text"
-              name="food_names[]"
-              placeholder="음식명"
-              class="food-input"
+    <!-- Include Sidebar or Navigation -->
+    <!-- {% include 'home/side.html' %} -->
+
+    <div class="container">
+      <header>
+        <h1 class="notfound-title">음식명 입력</h1>
+        <p class="notfound-subtitle">인식된 음식이 없습니다.</p>
+      </header>
+      <section>
+        <form action="/input_food" method="post" class="food_form">
+          <div class="cam_predict_image">
+            <img
+              src="{{ user_image }}"
+              alt="User Image"
+              class="cam_predict_img"
             />
-            <a href="#" class="remove_field">✖</a>
           </div>
-        </div>
-        <button type="submit" class="submit_button">제출</button>
-      </form>
+          <button class="add_food_button">음식 추가</button>
+          <div class="input_fields_wrap">
+            <div class="input-block">
+              <input
+                type="text"
+                name="food_names[]"
+                placeholder="음식명"
+                class="food-input"
+              />
+              <a href="#" class="remove_field">✖</a>
+            </div>
+          </div>
+          <button type="submit" class="submit_button">결과 보기</button>
+        </form>
+      </section>
     </div>
+
+    <script src="static/food/upload-validation.js"></script>
+    <script src="static/food/upload.js"></script>
   </body>
 </html>
