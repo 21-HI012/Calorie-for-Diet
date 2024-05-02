@@ -3,10 +3,8 @@ body {
   background-color: #f4f4f9;
   margin: 0;
   padding: 20px; /* Ensure there's some padding around the body content */
-  display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
 }
 
 .weight-form {
@@ -16,6 +14,7 @@ body {
   border-radius: 10px;
   background-color: white;
   text-align: center;
+  margin: 20px auto;
 }
 
 .cam_predict_name,

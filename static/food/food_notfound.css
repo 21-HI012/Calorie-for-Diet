@@ -3,10 +3,8 @@ body {
   background-color: #f4f4f9; /* Light grey background for a subtle look */
   margin: 0;
   padding: 20px; /* Padding to ensure content does not stick to edges */
-  display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Full height to center container vertically */
 }
 
 .container {
@@ -16,6 +14,7 @@ body {
   border-radius: 10px; /* Rounded corners for modern look */
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   width: 90%; /* Responsive width */
+  margin: 20px auto;
 }
 .notfound-title {
   font-size: 24px;
