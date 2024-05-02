@@ -138,8 +138,10 @@ def save_result():
         t_record.t_cholesterol += new_food.cholesterol
         t_record.t_protein += new_food.protein
         db.session.commit()
-        
+
+        session.pop('nutrition_data', None)
+        session.pop('user_image', None)        
         return Response(day_record())
 
     flash('저장할 데이터가 없습니다.', 'info')
-    return redirect(url_for('food.main'))
+    return redirect(url_for('home.main'))
