@@ -12,23 +12,25 @@
 <body onload="date()">
   {% include 'home/side.html' %}
 
-  <div class="main_intro">안녕하세요. {{current_user.name}}님!
-      <br>오늘의 섭취 영양정보 입니다.
-  </div>
-
-  <div id="main_date" class="main_date"></div>
-
-  <div>
-    {% for nutrition, num in t_nutrition.items() %}
-    <div class="graph-container">
-      <div class="graph-label">{{nutrition}}: {{num}} / {{ {'calories': '2,500kcal', 'sodium': '2,000mg', 'carbohydrate': '280g', 'fat': '50g', 'cholesterol': '260mg', 'protein': '72g'}[nutrition] }}</div>
-      {% set percentage = (num / {'calories': 2500, 'sodium': 2000, 'carbohydrate': 280, 'fat': 50, 'cholesterol': 260, 'protein': 72}[nutrition] * 100) | round %}
-      <div class="graph-percentage">{{ percentage }}%</div>
+  <div class="container">
+    <div class="main_intro">안녕하세요. {{current_user.name}}님!
+        <br>오늘의 섭취 영양정보 입니다.
     </div>
-    <div class="graph-bar">
-      <span class="{{nutrition}}" style="width: {{ percentage }}%; background-color: {{ {'calories': '#ffb1bb', 'sodium': '#ffbe9f', 'carbohydrate': '#f3dd6d', 'fat': '#bae8d9', 'cholesterol': '#c7dbf4', 'protein': '#d5c9dd'}[nutrition] }};"></span>
-    </div>
-    {% endfor %}
+
+    <div id="main_date" class="main_date"></div>
+
+    <div>
+      {% for nutrition, num in t_nutrition.items() %}
+      <div class="graph-container">
+        <div class="graph-label">{{nutrition}}: {{num | round}} / {{ {'calories': '2,500kcal', 'sodium': '2,000mg', 'carbohydrate': '280g', 'fat': '50g', 'cholesterol': '260mg', 'protein': '72g'}[nutrition] }}</div>
+        {% set percentage = (num / {'calories': 2500, 'sodium': 2000, 'carbohydrate': 280, 'fat': 50, 'cholesterol': 260, 'protein': 72}[nutrition] * 100) | round %}
+        <div class="graph-percentage">{{ percentage }}%</div>
+      </div>
+      <div class="graph-bar">
+        <span class="{{nutrition}}" style="width: {{ percentage }}%; background-color: {{ {'calories': '#ffb1bb', 'sodium': '#ffbe9f', 'carbohydrate': '#f3dd6d', 'fat': '#bae8d9', 'cholesterol': '#c7dbf4', 'protein': '#d5c9dd'}[nutrition] }};"></span>
+      </div>
+      {% endfor %}
+    </div>  
   </div>
   
   <script>

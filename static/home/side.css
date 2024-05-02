@@ -1,8 +1,15 @@
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
 .header {
-    color: white;
-    text-align: center;
-    font-size: 30px;
-    font-weight: bold;
+    width: 100%;
+    height: 15vh;
+    background-image: url('../calorie-for-diet.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 .side_button {

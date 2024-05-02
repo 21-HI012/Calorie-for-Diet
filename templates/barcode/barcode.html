@@ -14,61 +14,63 @@
 <body>
     {% include 'home/side.html' %}
 
-    <div id="videoFeed">
-        <img src="{{ url_for('barcode.video_feed') }}" />
-    </div>
+    <div class="container">
+        <div id="videoFeed">
+            <img src="{{ url_for('barcode.video_feed') }}" />
+        </div>
 
-    <div id="noMatchMessage" style="display:none;">
-        <h3>일치하는 정보가 없습니다.</h3>
-    </div>
+        <div id="noMatchMessage" style="display:none;">
+            <h3>일치하는 정보가 없습니다.</h3>
+        </div>
 
-    <div id="manualInput" style="display:none;">
-        <h2>식품 정보 직접 입력</h2>
-        <form id="manualForm">
-            <table>
-                <tr>
-                    <td>식품명</td>
-                    <td><input type="text" id="manualName" required></td>
-                </tr>
-                <tr>
-                    <td>내용량(g)</td>
-                    <td><input type="number" id="manualWeight" required></td>
-                </tr>
-                <tr>
-                    <td>열량(kcal)</td>
-                    <td><input type="number" id="manualCalories" required></td>
-                </tr>
-                <tr>
-                    <td>나트륨(mg)</td>
-                    <td><input type="number" id="manualSodium" required></td>
-                </tr>
-                <tr>
-                    <td>탄수화물(g)</td>
-                    <td><input type="number" id="manualCarbohydrate" required></td>
-                </tr>
-                <tr>
-                    <td>지방(g)</td>
-                    <td><input type="number" id="manualFat" required></td>
-                </tr>
-                <tr>
-                    <td>콜레스테롤(mg)</td>
-                    <td><input type="number" id="manualCholesterol" required></td>
-                </tr>
-                <tr>
-                    <td>단백질(g)</td>
-                    <td><input type="number" id="manualProtein" required></td>
-                </tr>
-            </table>
-            <button type="submit" class="form-button">정보 저장</button>
-        </form>
-    </div>
+        <div id="manualInput" style="display:none;">
+            <h2>식품 정보 직접 입력</h2>
+            <form id="manualForm">
+                <table>
+                    <tr>
+                        <td>식품명</td>
+                        <td><input type="text" id="manualName" required></td>
+                    </tr>
+                    <tr>
+                        <td>내용량(g)</td>
+                        <td><input type="number" id="manualWeight" required></td>
+                    </tr>
+                    <tr>
+                        <td>열량(kcal)</td>
+                        <td><input type="number" id="manualCalories" required></td>
+                    </tr>
+                    <tr>
+                        <td>나트륨(mg)</td>
+                        <td><input type="number" id="manualSodium" required></td>
+                    </tr>
+                    <tr>
+                        <td>탄수화물(g)</td>
+                        <td><input type="number" id="manualCarbohydrate" required></td>
+                    </tr>
+                    <tr>
+                        <td>지방(g)</td>
+                        <td><input type="number" id="manualFat" required></td>
+                    </tr>
+                    <tr>
+                        <td>콜레스테롤(mg)</td>
+                        <td><input type="number" id="manualCholesterol" required></td>
+                    </tr>
+                    <tr>
+                        <td>단백질(g)</td>
+                        <td><input type="number" id="manualProtein" required></td>
+                    </tr>
+                </table>
+                <button type="submit" class="form-button">정보 저장</button>
+            </form>
+        </div>
 
-    <div class="button-container">
-        <button id="manualEntryButton">직접 입력</button>
-        <button id="rescanButton" style="margin-top: 10px; display: none;">재인식하기</button>
-    </div>
+        <div class="button-container">
+            <button id="manualEntryButton">직접 입력</button>
+            <button id="rescanButton" style="margin-top: 10px; display: none;">재인식하기</button>
+        </div>
 
-    <div id="result"></div>
+        <div id="result"></div>
+    </div>
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function () {

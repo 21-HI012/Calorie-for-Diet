@@ -1,3 +1,7 @@
+.container {
+    padding-top: 50px;
+}
+
 #videoFeed {
     display: flex;
     justify-content: center;
