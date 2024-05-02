@@ -69,6 +69,12 @@ button:hover {
   }
 }
 
+.error,
+.email-error {
+  color: red;
+  text-align: center;
+}
+
 @media (max-width: 480px) {
   body {
     padding: 10px; /* Add padding to avoid touching the edges */

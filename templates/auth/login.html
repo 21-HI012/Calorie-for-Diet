@@ -36,6 +36,9 @@
             placeholder="Enter your password"
           />
         </div>
+        {% if message %}
+        <div class="error">{{ message }}</div>
+        {% endif %}
         <button type="submit" class="btn btn-primary">Login</button>
       </form>
     </div>

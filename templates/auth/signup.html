@@ -5,44 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up | Calorie for Diet</title>
     <link rel="stylesheet" href="static/auth/signup.css" />
-    <script>
-      function validateForm() {
-        var name = document.forms["signupForm"]["name"].value;
-        var email = document.forms["signupForm"]["email"].value;
-        var password = document.forms["signupForm"]["password"].value;
-
-        if (name == "" || email == "" || password == "") {
-          alert("Name, Email, and Password must be filled out");
-          return false; // Prevents the form from submitting
-        }
-        return true; // Allows the form to submit
-      }
-    </script>
   </head>
-
   <body>
     <div class="signup-container">
       <h1>Calorie for Diet</h1>
       <h2>SIGN UP</h2>
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div class="alert alert-{{ category }}">{{ message }}</div>
-      {% endfor %} {% endif %} {% endwith %}
       <form
         name="signupForm"
         action="/signup"
         method="POST"
         onsubmit="return validateForm()"
       >
+        {% if email_message %}
+        <div class="email-error message-alert">{{ email_message }}</div>
+        {% endif %}
         <input type="text" name="name" placeholder="이름" />
-        <input type="email" name="email" placeholder="아이디" />
+        <input type="email" name="email" placeholder="이메일" />
         <input type="password" name="password" placeholder="비밀번호" />
         <input type="text" name="height" placeholder="키" />
         <input type="text" name="weight" placeholder="몸무게" />
         <input type="text" name="gender" placeholder="성별" />
         <input type="text" name="age" placeholder="나이" />
+        {% if message %}
+        <div class="error message-alert">{{ message }}</div>
+        {% endif %}
         <button type="submit">회원가입</button>
       </form>
     </div>
+    <script src="static/auth/message.js"></script>
   </body>
 </html>

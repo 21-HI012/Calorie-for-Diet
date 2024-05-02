@@ -21,11 +21,15 @@ def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
 
+    if not email or not password:
+        message = '이메일과 비밀번호를 입력해주세요.'
+        return render_template('auth/login.html', message=message)
+
     user = User.query.filter_by(email=email).first()
-    
+
     if not user or not check_password_hash(user.password, password):
-        flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login'))
+        message = '이메일 주소 또는 비밀번호가 올바르지 않습니다.'
+        return render_template('auth/login.html', message=message)
 
     login_user(user)
     return redirect(url_for('home.main'))
@@ -44,15 +48,14 @@ def signup_post():
     gender = request.form.get('gender')
 
     if not name or not email or not password:
-        flash('이름, 이메일, 비밀번호는 필수 입력 항목입니다.', 'error')
-        return redirect(url_for('auth.signup'))
+        message = '이름, 이메일, 비밀번호는 필수 입력 항목입니다.'
+        return render_template('auth/signup.html', message=message)
 
-    
     user = User.query.filter_by(email=email).first()
 
     if user:
-        flash('Email address already exists')
-        return redirect(url_for('auth.signup'))
+        email_message = '이미 존재하는 이메일 주소입니다.'
+        return render_template('auth/signup.html', email_message=email_message)
 
     if gender == "남자":
         gender = 0
@@ -64,6 +67,5 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
 
-    flash('회원가입 완료! 로그인 해주세요.', 'success')
-
-    return redirect(url_for('auth.login'))
+    message = '회원가입 완료! 로그인 해주세요.'
+    return render_template('auth/login.html', message=message)
