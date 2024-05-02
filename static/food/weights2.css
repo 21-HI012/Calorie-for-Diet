@@ -11,7 +11,6 @@ body {
 
 .weight-form {
   width: 90%;
-  max-width: 600px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -38,7 +37,6 @@ body {
 .cam_predict_img {
   width: 100%;
   height: auto;
-  max-height: 300px; /* Limit the image height while maintaining aspect ratio */
 }
 
 .food_name {
@@ -60,18 +58,19 @@ body {
 }
 
 .save_input {
-  padding: 10px 20px;
-  font-size: 1em;
+  background-color: #28a745; /* Success color, indicative of action */
   color: white;
-  background-color: #007bff;
   border: none;
-  border-radius: 5px;
+  padding: 12px 24px; /* Consistent padding with label */
+  font-size: 16px; /* Legible font size */
   cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 5px;
+  width: 100%; /* Full width button for emphasis */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 .save_input:hover {
-  background-color: #0056b3;
+  background-color: #218838; /* Darker shade on hover */
 }
 
 @media (max-width: 768px) {
